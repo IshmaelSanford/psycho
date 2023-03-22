@@ -9,13 +9,23 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "starboard-set-emoji",
+      name: "starboardsetemoji",
       enabled: true,
-      syntax: "starboard-set-emoji <emoji>",
       staffOnly: true,
+      aliases: ['sse', 'starsetem'],
+      syntax: "sse <emoji>",
+      about: 'Set the emoji for Starboard',
+      example: 'starsetem :star:',
     });
   }
   async execute(message, args) {
+    
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
+
     const emoji = args[0];
 
     if (!emoji)
@@ -27,7 +37,7 @@ module.exports = class extends Command {
       await message.react(emoji);
     } catch (error) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid emoji" })],
+        embeds: [new ErrorEmbed({ description: "Invalid emoji" },message)],
       });
     }
 
@@ -35,7 +45,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `Successfully set ${emoji} for starboard emoji.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }
