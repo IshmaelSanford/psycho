@@ -24,7 +24,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully cleared all reaction roles from database.`,
-        }),
+        },author),
       ],
     });
   }

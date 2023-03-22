@@ -17,6 +17,11 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
     const channels = message.guild.channels.cache;
 
     const ignores = this.client.plugins.settings.getLockIgnoreList(
@@ -32,7 +37,7 @@ module.exports = class extends Command {
     }
 
     message.reply({
-      embeds: [new SuccessEmbed({ description: `Locked all channels.` })],
+      embeds: [new SuccessEmbed({ description: `Locked all channels.` },message)],
     });
   }
 };

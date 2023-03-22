@@ -20,10 +20,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     await member.voice.setMute(false);
 
@@ -31,7 +32,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `User ${member} is now voice unmuted!`,
-        }),
+        },message),
       ],
     });
 

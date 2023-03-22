@@ -16,14 +16,15 @@ module.exports = class extends Command {
 
     if (!text)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    
 
     await this.client.plugins.leveling.setLevelUpMessage(message, text);
 
     const embed = new SuccessEmbed({
       description: `Successfully updated your level-up message.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

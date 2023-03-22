@@ -22,7 +22,7 @@ module.exports = class extends Command {
     const message_id = args[1];
     if (!channel || !message_id)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
 
     this.client.plugins.roles.reactionRoleRemoveAll(
@@ -39,7 +39,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `An error ocurred: Channel/Message ID or Emoji are not valid.`,
-          }),
+          },author),
         ],
       });
     }
@@ -48,7 +48,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully deleted all reaction roles.`,
-        }),
+        },author),
       ],
     });
   }

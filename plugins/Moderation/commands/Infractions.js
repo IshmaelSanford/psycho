@@ -20,10 +20,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     const infractions = await this.client.plugins.moderation.getInfractions(
       message.guild,
@@ -32,7 +33,7 @@ module.exports = class extends Command {
 
     if (!infractions.length)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: `No infractions found.` })],
+        embeds: [new ErrorEmbed({ description: `No infractions found.` },message)],
       });
 
     let index = 1;

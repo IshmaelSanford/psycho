@@ -20,10 +20,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     await this.client.plugins.moderation.clearInfractions(
       message.guild,
@@ -34,7 +35,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Cleared infractions for user ${member}`,
-        }),
+        },message),
       ],
     });
 

@@ -22,10 +22,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     let duration = args[1];
 
@@ -37,7 +38,7 @@ module.exports = class extends Command {
           new ErrorEmbed({
             description:
               "Invalid time format. Format Example: **10m, 10h, 10d, 2w**..",
-          }),
+          },message),
         ],
       });
     }
@@ -46,7 +47,7 @@ module.exports = class extends Command {
     if (!member.bannable)
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Member ${member} is not bannable!` }),
+          new ErrorEmbed({ description: `Member ${member} is not bannable!` },message),
         ],
       });
 
@@ -64,7 +65,7 @@ module.exports = class extends Command {
           description: `User ${member} was temp-banned for ${ms(duration, {
             long: true,
           })}!`,
-        }),
+        },message),
       ],
     });
 

@@ -33,14 +33,14 @@ module.exports = class extends Command {
 
     if (!channel)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid channel id." })],
+        embeds: [new ErrorEmbed({ description: "Invalid channel id." },message)],
       });
 
     const msg = await channel.messages.fetch(message_id);
 
     if (!msg)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid message id." })],
+        embeds: [new ErrorEmbed({ description: "Invalid message id." },message)],
       });
 
     await message.reply({
@@ -49,7 +49,7 @@ module.exports = class extends Command {
           description: `**Message Embed(s):** \`\`\`js\n ${msg.embeds.map((x) =>
             JSON.stringify(x.toJSON(), null, 2)
           )} \n\`\`\``,
-        }),
+        },message),
       ],
     });
   }

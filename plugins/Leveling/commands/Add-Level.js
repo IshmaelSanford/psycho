@@ -25,7 +25,7 @@ module.exports = class extends Command {
 
     if (!role || !amount) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -37,7 +37,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `Successfully added ${role} on level ${amount}`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

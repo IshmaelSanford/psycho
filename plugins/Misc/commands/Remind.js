@@ -65,8 +65,8 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description:
-              `${message.author.toString()}: Invalid time format. Format Example: **10m, 1h, 3h**..`,
-          }),
+              `Invalid time format. Format Example: **10m, 1h, 3h**..`,
+          },message),
         ],
       });
     }
@@ -82,10 +82,10 @@ module.exports = class extends Command {
     await message.channel.send({
       embeds: [
         new SuccessEmbed({
-          description: `${message.author.toString()}: Set reminder in **${ms(duration, {
+          description: `Set reminder in **${ms(duration, {
             long: true,
           })}** for \`${reminderText}\`.`,
-        }),
+        },message),
       ],
     });
 

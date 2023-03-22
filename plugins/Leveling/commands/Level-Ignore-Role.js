@@ -16,14 +16,15 @@ module.exports = class extends Command {
 
     if (!role)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+  
 
     await this.client.plugins.leveling.ignoreRole(role);
 
     const embed = new SuccessEmbed({
       description: `Successfully added ${role} to roles ignore list.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

@@ -17,6 +17,7 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
+    
     const channels = message.guild.channels.cache;
 
     const ignores = this.client.plugins.settings.getLockIgnoreList(
@@ -32,7 +33,7 @@ module.exports = class extends Command {
     }
 
     message.reply({
-      embeds: [new SuccessEmbed({ description: `Unlocked all channels.` })],
+      embeds: [new SuccessEmbed({ description: `Unlocked all channels.` },message)],
     });
   }
 };

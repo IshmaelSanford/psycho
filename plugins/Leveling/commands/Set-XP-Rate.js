@@ -27,7 +27,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `Successfully set **${rate}x** to XP rate.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

@@ -44,7 +44,7 @@ module.exports = class extends Command {
     } else if (emoji?.startsWith("http"))
       return message.channel.send({
         embeds: [
-          new ErrorEmbed({ description: `You cannot add default emojis!` }),
+          new ErrorEmbed({ description: `You cannot add default emojis!` },message),
         ],
       });
     else
@@ -88,7 +88,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully added emoji ${added} with name \`${name}\`!`,
-        }),
+        },message),
       ],
     });
   }

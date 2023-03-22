@@ -21,7 +21,7 @@ module.exports = class extends Command {
     if (message.member.id !== message.guild.ownerId)
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Only server owner can do this.` }),
+          new ErrorEmbed({ description: `Only server owner can do this.` },message),
         ],
       });
 
@@ -38,7 +38,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Removed ${member} from the staff list.`,
-        }),
+        },message),
       ],
     });
   }

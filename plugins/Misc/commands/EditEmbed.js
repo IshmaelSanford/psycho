@@ -41,14 +41,14 @@ module.exports = class extends Command {
       data = JSON.parse(Buffer.from(base64, "base64").toString());
     } catch (error) {
       return await message.editReply({
-        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` })],
+        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` },message)],
       });
     }
 
     if (!data.messages.length || !data.messages[0].data.embeds?.length) {
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `No valid embeds in this message.` }),
+          new ErrorEmbed({ description: `No valid embeds in this message.` },message),
         ],
       });
     }
@@ -70,14 +70,14 @@ module.exports = class extends Command {
 
     if (!channel)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid channel id." })],
+        embeds: [new ErrorEmbed({ description: "Invalid channel id." },message)],
       });
 
     const msg = await channel.messages.fetch(message_id);
 
     if (!msg)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid message id." })],
+        embeds: [new ErrorEmbed({ description: "Invalid message id." },message)],
       });
 
     await msg.edit({
@@ -88,7 +88,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully edited message!`,
-        }),
+        },message),
       ],
     });
   }

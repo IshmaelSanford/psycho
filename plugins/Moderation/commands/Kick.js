@@ -20,24 +20,25 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     const reason = args.slice(1).join(" ") || "No reason provided!";
 
     if (!member.kickable)
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Member ${member} is not kickable!` }),
+          new ErrorEmbed({ description: `Member ${member} is not kickable!` },message),
         ],
       });
 
     await member.kick({ reason });
 
     await message.reply({
-      embeds: [new SuccessEmbed({ description: `User ${member} was kicked!` })],
+      embeds: [new SuccessEmbed({ description: `User ${member} was kicked!` },message)],
     });
 
     let logChannel = this.client.plugins.settings.getModLog(message.guild);

@@ -21,7 +21,7 @@ module.exports = class extends Command {
       description: `Successfully toggled level-up messages to \`${
         !status === true ? "enabled" : "disabled"
       }\``,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

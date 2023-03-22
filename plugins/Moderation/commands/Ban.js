@@ -20,24 +20,25 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     const reason = args.slice(1).join(" ") || "No reason provided!";
 
     if (!member.bannable)
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Member ${member} is not bannable!` }),
+          new ErrorEmbed({ description: `Member ${member} is not bannable!` },message),
         ],
       });
 
     await member.ban({ reason, days: 1 });
 
     await message.reply({
-      embeds: [new SuccessEmbed({ description: `User ${member} was banned!` })],
+      embeds: [new SuccessEmbed({ description: `User ${member} was banned!` },message)],
     });
 
     let logChannel = message.guild.channels.cache.get(

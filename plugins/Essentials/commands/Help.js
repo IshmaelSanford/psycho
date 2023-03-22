@@ -30,7 +30,7 @@ module.exports = class extends Command {
 
     if (!command)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: `Cannot find that command.` })],
+        embeds: [new ErrorEmbed({ description: `Cannot find that command.` },message)],
       });
 
     const prefix = await this.client.plugins.settings.prefix(message.guild);

@@ -29,8 +29,8 @@ module.exports = class extends Command {
       await message.channel.send({
         embeds: [
           new SuccessEmbed({
-            description: `${message.author.toString()}: You are now **AFK** for \`${msg}\``,
-          }),
+            description: `You are now **AFK** for \`${msg}\``,
+          },message),
         ],
       });
   

@@ -21,7 +21,7 @@ module.exports = class extends Command {
 
     if (!role) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -29,7 +29,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `Successfully removed ${role} from rewards.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

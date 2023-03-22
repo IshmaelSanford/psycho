@@ -17,10 +17,15 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
     if (message.member.id !== message.guild.ownerId)
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Only server owner can do this.` }),
+          new ErrorEmbed({ description: `Only server owner can do this.` },message),
         ],
       });
 
@@ -35,7 +40,7 @@ module.exports = class extends Command {
 
     await message.reply({
       embeds: [
-        new SuccessEmbed({ description: `Added ${member} to the staff list.` }),
+        new SuccessEmbed({ description: `Added ${member} to the staff list.` },message),
       ],
     });
   }

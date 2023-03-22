@@ -20,7 +20,7 @@ module.exports = class extends Command {
       description: `Successfully toggled leveling stack rewards to \`${
         !status === true ? "enabled" : "disabled"
       }\``,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

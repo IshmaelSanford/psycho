@@ -19,13 +19,14 @@ module.exports = class extends Command {
   }
   async execute(message, args) {
     const channel = message.mentions.channels.first();
+    const author = message.author;
     const message_id = args[1];
     const emoji = args[2];
     const role = message.mentions.roles.first();
 
     if (!channel || !message_id || !emoji || !role)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
 
     this.client.plugins.roles.reactionRoleAdd(
@@ -43,8 +44,8 @@ module.exports = class extends Command {
       return message.reply({
         embeds: [
           new ErrorEmbed({
-            description: `An error ocurred: some of parameters are not valid.`,
-          }),
+            description: `An error ocurred: some parameters are not valid.`,
+          },author),
         ],
       });
     }
@@ -53,7 +54,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully created reaction role for ${emoji}.`,
-        }),
+        },author),
       ],
     });
   }

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { Command } = require("../../../structures");
 const {
-  ErrorEmbed,
+  WarnEmbed,
   SuccessEmbed,
   WrongSyntaxEmbed,
   DefaultEmbed,
@@ -18,37 +18,36 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
-    if (message.member.id !== message.guild.ownerId)
-      return message.reply({
-        embeds: [
-          new ErrorEmbed({ description: `Only server owner can do this.` }),
-        ],
-      });
 
     const members = await this.client.plugins.moderation.getStaffList(
       message.guild
     );
 
     if (!members.length)
-      return message.reply({
+      return message.channel.send({
         embeds: [
-          new ErrorEmbed({
+          new WarnEmbed({
             description: `There are no staff members at the moment.`,
-          }),
+          },message),
         ],
       });
 
     let index = 1;
 
     const embed = new DefaultEmbed()
-      .setTitle(`Staff Members (${members.length})`)
+    .setAuthor({
+      name: `${message.guild.name}`,
+      iconURL: this.client.user.displayAvatarURL({ dynamic: true }),
+    })
+      .setTitle(`🛠️ Staff Members • ${members.length}`)
+      .setColor('#66757f')
       .setDescription(
         members
-          .map((x) => `👔 **#${index++}** <@${x}> (\`ID: ${x}\`)`)
+          .map((x) => `\`${index++}\`ㅤ•ㅤ<@${x}>ㅤ•ㅤ\`${x}\``)
           .join("\n")
       )
       .setThumbnail(message.guild.iconURL({ dynamic: true }));
 
-    await message.reply({ embeds: [embed] });
+    await message.channel.send({ embeds: [embed] });
   }
 };

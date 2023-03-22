@@ -22,7 +22,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `Invalid syntax. \nPlease use: \`add-xp (@user) (amount)\``,
-          }),
+          },message),
         ],
       });
     }
@@ -36,7 +36,7 @@ module.exports = class extends Command {
       description: `Successfully added **${this.client.plugins.economy.parseAmount(
         amount
       )} xp** to ${user}'s profile.`,
-    });
+    },message);
 
     await interaction.editReply({ embeds: [embed] });
   }

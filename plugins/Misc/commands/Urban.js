@@ -31,7 +31,7 @@ module.exports = class extends Command {
     if (!data) {
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `Could not find resulsts for \`${query}\`` }),
+          new ErrorEmbed({ description: `Could not find resulsts for \`${query}\`` },message),
         ],
       });
     }
@@ -41,7 +41,6 @@ module.exports = class extends Command {
         .setTitle(`Definition: ${json.word}`)
         .setDescription(json.definition)
         .addFields({ name: "Example", value: json.example })
-        .setColor("#4289c1")
         .setFooter({
           text: `Author: ${json.author} | 👍 ${json.thumbs_up} 👎 ${json.thumbs_down}`,
         });

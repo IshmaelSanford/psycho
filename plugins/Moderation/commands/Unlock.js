@@ -17,6 +17,11 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
     const channel = message.mentions.channels.first();
 
     channel.permissionOverwrites.edit(message.guild.roles.everyone.id, {
@@ -26,7 +31,7 @@ module.exports = class extends Command {
 
     message.reply({
       embeds: [
-        new SuccessEmbed({ description: `Unlocked channel ${channel}` }),
+        new SuccessEmbed({ description: `Unlocked channel ${channel}` },message),
       ],
     });
   }

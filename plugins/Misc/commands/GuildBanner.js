@@ -19,8 +19,8 @@ module.exports = class extends Command {
       return message.reply({
         embeds: [
           new ErrorEmbed({
-            description: `${message.author.toString()}: This server doesn't have a banner`,
-          }),
+            description: `This server doesn't have a banner`,
+          },message),
         ],
       });
     }

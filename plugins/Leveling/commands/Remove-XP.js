@@ -49,7 +49,7 @@ module.exports = class extends Command {
       description: `Successfully removed **${this.client.plugins.economy.parseAmount(
         amount
       )} xp** from ${user}'s profile.`,
-    });
+    },message);
 
     await interaction.editReply({ embeds: [embed] });
   }

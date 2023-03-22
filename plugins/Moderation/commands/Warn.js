@@ -20,10 +20,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     const member = message.mentions.members.first();
 
-    if (!member)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     const reason = args.slice(1).join(" ") || "No reason provided!";
 
@@ -38,7 +39,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `User ${member} has been warned! \nReason: \`${reason}\``,
-        }),
+        },message),
       ],
     });
 

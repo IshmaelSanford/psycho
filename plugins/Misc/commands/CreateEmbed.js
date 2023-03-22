@@ -38,14 +38,14 @@ module.exports = class extends Command {
       data = JSON.parse(Buffer.from(base64, "base64").toString());
     } catch (error) {
       return await message.editReply({
-        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` })],
+        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` },message)],
       });
     }
 
     if (!data.messages.length || !data.messages[0].data.embeds?.length) {
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `No valid embeds in this message.` }),
+          new ErrorEmbed({ description: `No valid embeds in this message.` },message),
         ],
       });
     }
@@ -66,7 +66,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully imported __**${embeds.length}**__ embeds from your link!`,
-        }),
+        },message),
       ],
     });
   }

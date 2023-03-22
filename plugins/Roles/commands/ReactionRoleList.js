@@ -26,7 +26,7 @@ module.exports = class extends Command {
     if (!roles.length)
       return message.reply({
         embeds: [new ErrorEmbed({ description: "No reaction roles found." })],
-      });
+      },author);
 
     let index = 1;
     await message.reply({

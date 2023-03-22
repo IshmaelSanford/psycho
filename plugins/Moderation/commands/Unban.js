@@ -20,16 +20,17 @@ module.exports = class extends Command {
   async execute(message, args) {
     const id = args[0];
 
-    if (!id)
+    if (args.length === 0) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
+    }
 
     await message.guild.bans.remove(id);
 
     await message.reply({
       embeds: [
-        new SuccessEmbed({ description: `User ${member} is now unbanned.` }),
+        new SuccessEmbed({ description: `User ${member} is now unbanned.` },message),
       ],
     });
 
