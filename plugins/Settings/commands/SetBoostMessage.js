@@ -9,7 +9,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "setboostmessage",
-      enabled: true,
+      enabled: false,
       data: new SlashCommandBuilder()
         .setName("setboostmessage")
         .setDescription("Set Boost Message")
