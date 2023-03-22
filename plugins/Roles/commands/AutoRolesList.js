@@ -11,7 +11,7 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "autorole-list",
+      name: "autorolelist",
       enabled: true,
       permission: PermissionFlagsBits.Administrator,
       syntax: "autorole-list",
