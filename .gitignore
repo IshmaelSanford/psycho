@@ -1,3 +1,6 @@
 gnode_modules
 node_modules
 .env
+enmap.sqlite
+enmap.sqlite-shm
+enmap.sqlite-wal
