@@ -14,8 +14,6 @@ module.exports = class extends Event {
     if (reaction.partial) await reaction.fetch();
     if (reaction.message.partial) await reaction.message.fetch();
 
-    if (!reaction.message.content) return;
-
     const status = this.client.plugins.starboard.getStatus(
       reaction.message.guild
     );
@@ -36,6 +34,16 @@ module.exports = class extends Event {
 
     const message = reaction.message;
 
+    const member = await reaction.message.guild.members.fetch(message.author.id);
+
+    if (message.reference) {
+      try {
+        message.referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
+      } catch (error) {
+        console.error("Error fetching the referenced message:", error);
+      }
+    }
+
     let find;
     if (reaction.emoji.id) find = reaction.emoji.id;
     else find = reaction.emoji.name;
@@ -46,55 +54,123 @@ module.exports = class extends Event {
     let users = await reaction1.users.fetch();
 
     const threshold = this.client.plugins.starboard.getThreshold(message.guild);
+
+    const originalEmbed = message.embeds[0];
+
+    const description = `${message.content}${message.content.length > 0 ? '\n' : ''}${message.reference && message.referencedMessage ? `<:reply:1087067601542328390> [Replying to ${message.referencedMessage.author.tag}](${message.referencedMessage.url})\n` : ''}`;
+
+    const imageAttachment = message.attachments.find(
+      (attachment) => attachment.contentType.startsWith("image/")
+    );
+
+    const videoAttachment = message.attachments.find(
+      (attachment) => attachment.contentType.startsWith("video/")
+    );
+
     if (users.size >= threshold) {
-      if (!this.client.plugins.starboard.getMsg(message.id)) {
+      const storedMessageId = this.client.plugins.starboard.getMsg(message.id);
+
+      if (!storedMessageId) {
         const embed = new EmbedBuilder()
+            .setAuthor({
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL({ dynamic: true }),
+            })
+            .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
+            .setDescription(description.length > 0 ? description : ' ');
+
+        if (originalEmbed?.title) {
+            embed.setTitle(originalEmbed.title);
+        }
+
+        if (originalEmbed?.description) {
+            embed.setDescription(originalEmbed.description);
+        }
+
+        if (originalEmbed?.image) {
+            embed.setImage(originalEmbed.image.url);
+        }
+
+        if (originalEmbed?.fields?.length) {
+            embed.addFields(originalEmbed.fields);
+        }
+
+        embed.addFields(
+                { name: `**#${message.channel.name}**`, value: `[Jump to message](${message.url})` }
+            )
+            .setTimestamp();
+
+        if (imageAttachment) {
+          embed.setImage(imageAttachment.url);
+        }
+
+        let msg;
+        if (videoAttachment) {
+          await message.guild.channels.cache
+            .get(channel)
+            ?.send(videoAttachment.url);
+        }
+
+        msg = await message.guild.channels.cache
+        .get(channel)
+        ?.send({
+          content: `${reaction.emoji} **# ${threshold}**`,
+          embeds: [embed],
+        });
+
+      if (!msg) return;
+
+      this.client.plugins.starboard.saveMsg(message.id, msg.id);
+    } else {
+      let starboardMessage;
+      try {
+        starboardMessage = await message.guild.channels.cache
+          .get(channel)
+          .messages.fetch(storedMessageId);
+      } catch (error) {
+        console.error("Error fetching starboard message:", error);
+      }
+
+      if (starboardMessage) {
+        // Recreate the original embed
+        const recreatedEmbed = new EmbedBuilder()
           .setAuthor({
             name: message.author.tag,
             iconURL: message.author.displayAvatarURL({ dynamic: true }),
           })
-          .setColor(this.client.plugins.starboard.getColor(message.guild))
-          .setDescription(
-            `${message.content}\n\n${message.channel} [Jump to message](${message.url})`
-          )
-          .setTimestamp();
+          .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
+          .setDescription(description.length > 0 ? description : ' ');
 
-        let msg = await message.guild.channels.cache
-          .get(channel)
-          ?.send({
-            content: `${reaction.emoji} **# ${threshold}**`,
-            embeds: [embed],
-          });
+        if (originalEmbed?.title) {
+          recreatedEmbed.setTitle(originalEmbed.title);
+        }
 
-        if (!msg) return;
+        if (originalEmbed?.description) {
+          recreatedEmbed.setDescription(originalEmbed.description);
+        }
 
-        this.client.plugins.starboard.saveMsg(message.id, msg.id);
+        if (originalEmbed?.image) {
+          recreatedEmbed.setImage(originalEmbed.image.url);
+        }
+
+        if (originalEmbed?.fields?.length) {
+          recreatedEmbed.addFields(originalEmbed.fields);
+        }
+
+        recreatedEmbed.addFields(
+          { name: `**#${message.channel.name}**`, value: `[Jump to message](${message.url})` }
+        )
+        .setTimestamp();
+
+        // Update the starboard message with the recreated embed
+        await starboardMessage.edit({
+          content: `${reaction.emoji} **# ${users.size}**`,
+          embeds: [recreatedEmbed],
+        });
       } else {
-        const embed = new EmbedBuilder()
-          .setAuthor({
-            name: message.author.tag,
-            iconURL: message.author.displayAvatarURL({ dynamic: true }),
-          })
-          .setColor(this.client.plugins.starboard.getColor(message.guild))
-          .setDescription(
-            `${message.content}\n\n${message.channel} [Jump to message](${message.url})`
-          );
-
-        let msg = await message.guild.channels.cache
-          .get(channel)
-          .messages.fetch(
-            this.client.plugins.starboard.messages.get(message.id, "embed")
-          );
-
-        let timestamp = msg.createdTimestamp;
-        embed.setTimestamp(timestamp);
-
-        if (msg)
-          msg.edit({
-            content: `${reaction.emoji} **# ${users.size}**`,
-            embeds: [embed],
-          });
+        console.error("Invalid starboardMessage object:", starboardMessage);
       }
     }
   }
+}
 };
