@@ -9,7 +9,7 @@ module.exports = class extends Command {
       name: "autorole-add",
       enabled: true,
       permission: PermissionFlagsBits.Administrator,
-      syntax: "autorole-add <@role>",
+      syntax: "autoroleadd <@role>",
       example: "Example",
       staffOnly: true,
     });
