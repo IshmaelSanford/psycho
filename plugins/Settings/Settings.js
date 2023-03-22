@@ -11,6 +11,10 @@ const prefixes = new Enmap({
 const settings = new Enmap({
   name: "guild-settings",
   autoEnsure: {
+    boost: {
+      allowed: true,
+      booster_role: null,
+      },
     safe_search: true,
     jail: {
       role_id: null,
