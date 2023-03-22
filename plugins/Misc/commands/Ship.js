@@ -21,10 +21,10 @@ module.exports = class extends Command {
         : filledBoxes === 1
         ? "<:blue_rounded_start_mid:1086134319048835172>"
         : "<:blue_rounded_start:1086127913180598342>",
-      ...Array(filledBoxes > 1 ? filledBoxes - 1 : 0).fill("<:blue_box:1086126408193032292>"),
-      filledBoxes <= 1 ? "" : filledBoxes < 10 ? "<:blue_rounded_mid:1086127912303988766>" : "",
-      ...Array(emptyBoxes).fill("<:white_box:1086126412760612926>"),
-      "<:white_rounded_end:1086127854468735136>",
+      ...Array(filledBoxes - (filledBoxes <= 1 || filledBoxes === 10 ? 1 : 2)).fill("<:blue_box:1086126408193032292>"),
+      filledBoxes > 1 && filledBoxes < 10 ? "<:blue_rounded_mid:1086127912303988766>" : "",
+      ...Array(Math.max(emptyBoxes - (filledBoxes === 10 ? 1 : 0), 0)).fill("<:white_box:1086126412760612926>"),
+      filledBoxes === 10 ? "<:blue_rounded_end:1086127854468735136>" : "<:white_rounded_end:1086127854468735136>",
     ].join("");
     return progressBar;
   }
