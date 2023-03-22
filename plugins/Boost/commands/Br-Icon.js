@@ -17,6 +17,26 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
+
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
+
+    function getErrorMessage(error) {
+      switch (error.code) {
+        case 10062:
+          return "This server hasn't unlocked role emojis yet.";
+        case 40005:
+          return "Emoji is too large!";
+        case 10011:
+          return "Role doesn't exist anymore.";
+        default:
+          return "An unknown error occurred.";
+      }
+    }
+
     let role = this.client.plugins.boost.getRole(message.member);
     role = message.guild.roles.cache.get(role);
 
@@ -44,21 +64,24 @@ module.exports = class extends Command {
     } else if (emoji?.startsWith("http"))
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `You cannot add default emojis!` }),
+          new ErrorEmbed({ description: `${message.author.toString()}: You cannot add default emojis!` }),
         ],
       });
     else
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
 
     try {
       await role.edit({ icon: emoji });
     } catch (error) {
-      return message.reply(
-        "❌ **Error while adding icon to your role:** \n- Your server doesn't unlocked role icon feature. \n- Emoji is too large! \n- Role doesn't exist anymore."
-      );
+      return message.reply({
+        embeds: [
+          new ErrorEmbed({ description: `${message.author.toString()}: ${getErrorMessage(error)}` }),
+        ],
+      });
     }
+    
 
     const embed = new SuccessEmbed({
       description: `Successfully set icon for your booster role.`,
