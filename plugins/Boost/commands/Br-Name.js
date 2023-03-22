@@ -3,6 +3,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const {
   DefaultEmbed,
   SuccessEmbed,
+  ErrorEmbed,
   WrongSyntaxEmbed,
 } = require("../../../embeds");
 
@@ -13,7 +14,15 @@ module.exports = class extends Command {
       enabled: true,
     });
   }
+
   async execute(message, args) {
+
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
+    
     let role = this.client.plugins.boost.getRole(message.member);
     role = message.guild.roles.cache.get(role);
 
@@ -24,9 +33,11 @@ module.exports = class extends Command {
 
     if (!name || name.length > 25)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds:
+          new ErrorEmbed({
+            description: `${message.author.toString()}: **Name too long** try something shorter`,
+          }),
       });
-
     role.edit({ name });
 
     const embed = new SuccessEmbed({
