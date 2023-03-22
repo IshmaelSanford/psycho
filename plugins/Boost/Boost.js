@@ -1,4 +1,5 @@
 const Enmap = require("enmap");
+const { DefaultEmbed } = require("../../embeds");
 
 const database = new Enmap({
   name: "boosters",
@@ -19,7 +20,7 @@ class BoostPlugin {
 
     let role = await member.guild.roles
       .create({
-        name: `${member.displayName}'s role`,
+        name: `${member.displayName}`,
         hoist: false,
         mentionable: false,
         position: member.roles.highest.position + 1,
@@ -39,7 +40,39 @@ class BoostPlugin {
     database.set(`${member.guild.id}-${member.id}`, data);
 
     await member.roles.add(role.id);
+    await this.sendBoostEmbed(member);
   }
+
+  async sendBoostEmbed(member) {
+    let vanityUrl = `${member.guild.name}`;
+    try {
+      const vanity = await member.guild.fetchVanityData();
+      if (vanity.code) {
+        vanityUrl = `discord.gg/${vanity.code}`;
+      }
+    } catch (error) {
+      console.error(`Vanity URL not found for guild ${member.guild.id}`);
+    }
+
+    const embed = new DefaultEmbed()
+      .setColor("#FF69B4")
+      .setAuthor({ name: vanityUrl, iconURL: 'https://cdn3.emoji.gg/emojis/6494-discord-boost.gif' })
+      .setTitle(`Thanks for boosting ${member.guild.name}`)
+      .setDescription(`You can now make a booster role! Use these commands to get started:`)
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true, format: 'png' }))
+      .addFields({ name: '\u200B', value: '```\nSteps:\n,br [hex] [name]\n,br icon [emoji]\n,br rename [name]\n```' })
+      .setFooter({ text: `rep ${member.guild.name} by putting ${vanityUrl} in your status!` });
+
+    const boostChannelID = this.client.settings.getBoostChannel(member.guild) || member.guild.systemChannelID;
+    const boostChannel = member.guild.channels.cache.get(boostChannelID);
+
+    if (boostChannel) {
+      boostChannel.send({ content: `<@${member.id}>`, embeds: [embed] });
+    } else {
+      console.error(`Boost channel not found for guild ${member.guild.id}`);
+    }
+  }
+
   remove(member) {
     let role = member.guild.roles.cache.get(getRole(member));
 
