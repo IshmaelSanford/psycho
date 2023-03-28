@@ -34,18 +34,22 @@ module.exports = class extends Event {
     if (!emoji.includes(reaction.emoji.id) && emoji !== reaction.emoji.name)
       return;
 
-      const message = reaction.message;
+    const message = reaction.message;
 
-      const member = await reaction.message.guild.members.fetch(message.author.id);
-      
-      // Fetch the referenced message if there is one
-      if (message.reference) {
-          try {
-              message.referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
-          } catch (error) {
-              console.error("Error fetching the referenced message:", error);
-          }
+    const member = await reaction.message.guild.members.fetch(
+      message.author.id
+    );
+
+    // Fetch the referenced message if there is one
+    if (message.reference) {
+      try {
+        message.referencedMessage = await message.channel.messages.fetch(
+          message.reference.messageId
+        );
+      } catch (error) {
+        console.error("Error fetching the referenced message:", error);
       }
+    }
 
     let find;
     if (reaction.emoji.id) find = reaction.emoji.id;
@@ -56,17 +60,26 @@ module.exports = class extends Event {
     );
     let users = await reaction1.users.fetch();
 
+    if (!users) return;
+
     const originalEmbed = message.embeds[0];
 
-    const description = `${message.content}${message.content.length > 0 ? '\n' : ''}${message.reference && message.referencedMessage ? `<:reply:1087067601542328390> [Replying to ${message.referencedMessage.author.tag}](${message.referencedMessage.url})\n` : ''}`;
+    const description = `${message.content}${
+      message.content.length > 0 ? "\n" : ""
+    }${
+      message.reference && message.referencedMessage
+        ? `<:reply:1087067601542328390> [Replying to ${message.referencedMessage.author.tag}](${message.referencedMessage.url})\n`
+        : ""
+    }`;
 
     const embed = new EmbedBuilder()
-        .setAuthor({
-            name: message.author.tag,
-            iconURL: message.author.displayAvatarURL({ dynamic: true }),
-        })
-        .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
-        .setDescription(description.length > 0 ? description : ' ');
+      .setAuthor({
+        name: message.author.tag,
+        iconURL: message.author.displayAvatarURL({ dynamic: true }),
+      })
+      .setColor(
+        originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
+      .setDescription(description.length > 0 ? description : " ");
 
     if (originalEmbed?.title) {
         embed.setTitle(originalEmbed.title);

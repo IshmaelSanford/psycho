@@ -59,7 +59,7 @@ class StarboardPlugin {
     this.settings.set(guild.id, !status, "enabled");
   }
   getMsg(msgID) {
-    return this.messages.get(msgID, "posted");
+    return this.messages.has(msgID) ? this.messages.get(msgID, "posted") : null;
   }
   saveMsg(msgID, embedID) {
     this.messages.set(msgID, true, "posted");

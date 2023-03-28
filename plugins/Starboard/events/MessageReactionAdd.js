@@ -69,17 +69,17 @@ module.exports = class extends Event {
 
     if (users.size >= threshold) {
       const storedMessageId = this.client.plugins.starboard.getMsg(message.id);
-
+    
       if (!storedMessageId) {
         const embed = new EmbedBuilder()
-            .setAuthor({
-                name: message.author.tag,
-                iconURL: message.author.displayAvatarURL({ dynamic: true }),
-            })
-            .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
-            .setDescription(description.length > 0 ? description : ' ');
-
-        if (originalEmbed?.title) {
+          .setAuthor({
+            name: message.author.tag,
+            iconURL: message.author.displayAvatarURL({ dynamic: true }),
+          })
+          .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
+          .setDescription(description.length > 0 ? description : ' ');
+    
+          if (originalEmbed?.title) {
             embed.setTitle(originalEmbed.title);
         }
 
@@ -121,56 +121,75 @@ module.exports = class extends Event {
       if (!msg) return;
 
       this.client.plugins.starboard.saveMsg(message.id, msg.id);
-    } else {
-      let starboardMessage;
-      try {
-        starboardMessage = await message.guild.channels.cache
-          .get(channel)
-          .messages.fetch(storedMessageId);
-      } catch (error) {
-        console.error("Error fetching starboard message:", error);
-      }
-
-      if (starboardMessage) {
-        // Recreate the original embed
+    
+      } else if (storedMessageId === null) {
+        console.error("Invalid storedMessageId:", storedMessageId);
+        return;
+      } else {
+        let starboardMessage;
+        try {
+          const fetchOptions = { limit: 1 };
+          if (typeof storedMessageId === "string" && /^\d+$/.test(storedMessageId)) {
+              fetchOptions.around = storedMessageId;
+          }
+          const starboardMessages = await message.guild.channels.cache
+              .get(channel)
+              .messages.fetch(fetchOptions);
+          starboardMessage = starboardMessages.first();
+        } catch (error) {
+          console.error("Error fetching starboard message:", error);
+        }
+    
+        if (!starboardMessage) {
+          console.error("Starboard message not found, storedMessageId:", storedMessageId);
+          return;
+        }
+    
         const recreatedEmbed = new EmbedBuilder()
-          .setAuthor({
-            name: message.author.tag,
-            iconURL: message.author.displayAvatarURL({ dynamic: true }),
-          })
-          .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
-          .setDescription(description.length > 0 ? description : ' ');
-
+        .setAuthor({
+          name: message.author.tag,
+          iconURL: message.author.displayAvatarURL({ dynamic: true }),
+        })
+        .setColor(originalEmbed?.color || (member.displayColor === 0 ? "#23272A" : member.displayColor))
+        .setDescription(description.length > 0 ? description : ' ');
+      
+      if (originalEmbed) {
         if (originalEmbed?.title) {
           recreatedEmbed.setTitle(originalEmbed.title);
         }
-
+      
         if (originalEmbed?.description) {
           recreatedEmbed.setDescription(originalEmbed.description);
         }
-
+      
         if (originalEmbed?.image) {
           recreatedEmbed.setImage(originalEmbed.image.url);
         }
-
+      
         if (originalEmbed?.fields?.length) {
           recreatedEmbed.addFields(originalEmbed.fields);
         }
-
-        recreatedEmbed.addFields(
-          { name: `**#${message.channel.name}**`, value: `[Jump to message](${message.url})` }
-        )
-        .setTimestamp();
-
-        // Update the starboard message with the recreated embed
-        await starboardMessage.edit({
-          content: `${reaction.emoji} **# ${users.size}**`,
-          embeds: [recreatedEmbed],
-        });
       } else {
-        console.error("Invalid starboardMessage object:", starboardMessage);
+        if (imageAttachment) {
+          recreatedEmbed.setImage(imageAttachment.url);
+        }
+      }
+      
+      recreatedEmbed.addFields(
+        { name: `**#${message.channel.name}**`, value: `[Jump to message](${message.url})` }
+      )
+      .setTimestamp();
+      
+        // Update the starboard message with the recreated embed
+        if (starboardMessage instanceof require('discord.js').Message) {
+          await starboardMessage.edit({
+            content: `${reaction.emoji} **# ${users.size}**`,
+            embeds: [recreatedEmbed],
+          });
+        } else {
+          console.error("starboardMessage is not an instance of Message:", starboardMessage);
+        }
       }
     }
   }
-}
 };
