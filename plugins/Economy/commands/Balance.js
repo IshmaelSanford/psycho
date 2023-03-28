@@ -6,7 +6,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "balance",
-      enabled: true,
+      enabled: false,
     });
   }
   async execute(message, args) {

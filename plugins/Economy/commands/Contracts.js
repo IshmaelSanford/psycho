@@ -22,7 +22,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be in the mafia to view contracts!",
-          }),
+          },message),
         ],
       });
     }
@@ -39,7 +39,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `There are no contracts in this server.`,
-          }),
+          },message),
         ],
       });
     }

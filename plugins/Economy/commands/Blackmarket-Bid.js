@@ -27,7 +27,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be in the mafia to use the blackmarket!",
-          }),
+          },message),
         ],
       });
     }
@@ -50,7 +50,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "That item does not exist on the blackmarket!",
-          }),
+          },message),
         ],
       });
     }
@@ -60,7 +60,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You cannot buy your own item!",
-          }),
+          },message),
         ],
       });
     }
@@ -71,7 +71,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "You do not have enough cash to buy this item!",
-            }),
+            },message),
           ],
         });
       }
@@ -106,7 +106,7 @@ module.exports = class extends Command {
             description: `You have successfully bought for **$${this.client.plugins.economy.parseAmount(
               item.price
             )}**!`,
-          }),
+          },message),
         ],
       });
     } else if (item.type === "auction") {
@@ -125,7 +125,7 @@ module.exports = class extends Command {
               description: `You must bid at least **$${
                 item.currentBid || item.price
               }**!`,
-            }),
+            },message),
           ],
         });
       }
@@ -135,7 +135,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "You do not have enough cash to bid on this item!",
-            }),
+            },message),
           ],
         });
       }
@@ -165,7 +165,7 @@ module.exports = class extends Command {
         embeds: [
           new SuccessEmbed({
             description: `You have successfully bid **$${bid}**!`,
-          }),
+          },message),
         ],
       });
     }

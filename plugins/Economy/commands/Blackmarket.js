@@ -26,7 +26,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be in the mafia to view the blackmarket!",
-          }),
+          },message),
         ],
       });
     }
@@ -43,7 +43,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `There are no items on the blackmarket in this server.`,
-          }),
+          },message),
         ],
       });
     }

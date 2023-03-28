@@ -27,7 +27,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be in the mafia to use the blackmarket!",
-          }),
+          },message),
         ],
       });
     }
@@ -53,7 +53,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You do not have this item in your inventory!",
-          }),
+          },message),
         ],
       });
     }
@@ -63,7 +63,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You cannot sell an item for less than $1!",
-          }),
+          },message),
         ],
       });
     }
@@ -73,7 +73,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You cannot sell an item for less than 5 minutes!",
-          }),
+          },message),
         ],
       });
     }
@@ -87,7 +87,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can only sell special items!",
-          }),
+          },message),
         ],
       });
     }
@@ -117,7 +117,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `You have successfully added **${specialItem.name}** to the blackmarket!`,
-        }),
+        },message),
       ],
     });
   }

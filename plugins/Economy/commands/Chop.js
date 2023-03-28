@@ -23,7 +23,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `You must wait 5 minutes before chopping again`,
-          }),
+          },message),
         ],
       });
     }
@@ -68,7 +68,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `You chopped a tree and sold it for **$${reward}**.`,
-        }),
+        },message),
       ],
     });
   }

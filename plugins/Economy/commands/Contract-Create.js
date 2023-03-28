@@ -27,7 +27,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be in a mafia to create a contract!",
-          }),
+          },message),
         ],
       });
     }
@@ -37,7 +37,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You must be Prestige Level 3 to create a contract!",
-          }),
+          },message),
         ],
       });
     }
@@ -57,7 +57,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't create a contract with yourself.",
-          }),
+          },message),
         ],
       });
     }
@@ -67,7 +67,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The minimum bounty is 1,000. Please try again.",
-          }),
+          },message),
         ],
       });
     }
@@ -77,7 +77,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You don't have enough cash to create this contract.",
-          }),
+          },message),
         ],
       });
     }
@@ -87,7 +87,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The description must be less than 255 characters.",
-          }),
+          },message),
         ],
       });
     }
@@ -111,7 +111,7 @@ module.exports = class extends Command {
           }** with a bounty of **$${this.client.plugins.economy.parseAmount(
             bounty
           )}**.`,
-        }),
+        },message),
       ],
     });
   }

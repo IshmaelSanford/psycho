@@ -39,7 +39,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `**#${store_id} Item** does not exist in the store.`,
-          }),
+          },message),
         ],
       });
     }
@@ -52,7 +52,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `**#${store_id} Item** name has been changed to **${name}**.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

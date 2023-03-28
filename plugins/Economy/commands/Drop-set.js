@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { DefaultEmbed, WrongSyntaxEmbed } = require("../../../embeds");
+const { DefaultEmbed, WrongSyntaxEmbed, SuccessEmbed, WarnEmbed } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -25,9 +25,9 @@ module.exports = class extends Command {
 
       return message.reply({
         embeds: [
-          new DefaultEmbed({
-            description: `Drops have been from removed from ${channel}`,
-          }),
+          new WarnEmbed({
+            description: `Drops have been removed from ${channel}`,
+          },message),
         ],
       });
     }
@@ -36,9 +36,9 @@ module.exports = class extends Command {
 
     message.reply({
       embeds: [
-        new DefaultEmbed({
+        new SuccessEmbed({
           description: `Drops have been set to \`${frequency}\` messages in ${channel}`,
-        }),
+        },message),
       ],
     });
   }

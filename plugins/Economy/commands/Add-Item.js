@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, WrongSyntaxEmbed } = require("../../../embeds");
+const { SuccessEmbed, WrongSyntaxEmbed, ErrorEmbed } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
@@ -21,7 +21,7 @@ module.exports = class extends Command {
 
     if (!item || !store_id || !cost || !description) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -34,7 +34,7 @@ module.exports = class extends Command {
             "This store ID is already taken. Please choose another one."
           ),
         ],
-      });
+      },message);
     }
 
     await this.client.plugins.economy.addItem(message.guild, {
@@ -46,7 +46,7 @@ module.exports = class extends Command {
 
     const embed = new SuccessEmbed({
       description: `Successfully added **Item #${store_id}** to the store.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }

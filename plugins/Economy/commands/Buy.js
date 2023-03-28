@@ -20,7 +20,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `Store is currently disabled.`,
-          }),
+          },message),
         ],
       });
     }
@@ -38,7 +38,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `There are no items in the store.`,
-          }),
+          },message),
         ],
       });
 
@@ -48,7 +48,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `There is no item with the store id of **${store_id}**.`,
-          }),
+          },message),
         ],
       });
     }
@@ -63,7 +63,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `You don't have enough money in cash.`,
-          }),
+          },message),
         ],
       });
     }
@@ -79,7 +79,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `You already have this item.`,
-          }),
+          },message),
         ],
       });
     }
@@ -103,7 +103,7 @@ module.exports = class extends Command {
           description: `Bought the **Item #${store_id}** for **$${this.client.plugins.economy.parseAmount(
             item.cost
           )}**.`,
-        }),
+        },message),
       ],
     });
   }
