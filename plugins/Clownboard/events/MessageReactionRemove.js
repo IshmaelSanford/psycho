@@ -45,6 +45,8 @@ module.exports = class extends Event {
     );
     let users = await reaction1.users.fetch();
 
+    if (!users) return;
+
     const embed = new EmbedBuilder()
       .setAuthor({
         name: message.author.tag,
