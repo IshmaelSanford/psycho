@@ -1,5 +1,4 @@
 const { Event } = require("../../../structures/");
-const { EmbedBuilder } = require("@discordjs/builders");
 
 module.exports = class extends Event {
   constructor(client) {
@@ -14,8 +13,6 @@ module.exports = class extends Event {
     if (reaction.partial) await reaction.fetch();
     if (reaction.message.partial) await reaction.message.fetch();
 
-    if (!reaction.message.content) return;
-
     const status = this.client.plugins.roles.reactionroles.get(
       reaction.message.guild.id,
       "locked"
@@ -29,12 +26,12 @@ module.exports = class extends Event {
 
     for (const rr of reaction_roles) {
       if (
-        (!rr.emoji.includes(reaction.emoji.id) &&
-          rr.emoji !== reaction.emoji.name) ||
-        rr.message_id === reaction.message_id
+        (rr.emoji.includes(reaction.emoji.id) || rr.emoji === reaction.emoji.name) &&
+        rr.message_id === reaction.message.id &&
+        rr.remove_on_unreact
       ) {
         const member = reaction.message.guild.members.cache.get(user.id);
-        member.roles.remove(rr.role_id);
+        member.roles.remove(rr.role_id).catch(() => {});
       }
     }
   }

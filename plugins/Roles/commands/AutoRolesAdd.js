@@ -6,11 +6,12 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "autorole-add",
+      name: "autoroleadd",
       enabled: true,
+      aliases: ['aradd', 'ara'],
       permission: PermissionFlagsBits.Administrator,
       syntax: "autoroleadd <@role>",
-      example: "Example",
+      example: "Automatically add roles to users when they join",
       staffOnly: true,
     });
   }
@@ -19,16 +20,16 @@ module.exports = class extends Command {
 
     if (!role)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax, this.example)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
 
     this.client.plugins.roles.autoRolesAdd(message.guild, role);
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
         new SuccessEmbed({
           description: `Successfully added ${role} to autoroles list.`,
-        }),
+        },message),
       ],
     });
   }

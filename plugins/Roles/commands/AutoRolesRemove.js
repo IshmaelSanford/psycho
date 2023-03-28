@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, WrongSyntaxEmbed } = require("../../../embeds");
+const { SuccessEmbed, WrongSyntaxEmbed, WarnEmbed } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
@@ -8,7 +8,9 @@ module.exports = class extends Command {
     super(client, {
       name: "autorole-remove",
       enabled: true,
+      aliases: ['arrem', 'arr'],
       permission: PermissionFlagsBits.Administrator,
+      example: 'Remove a single auto role on the server',
       syntax: "autorole-remove <@role>",
       staffOnly: true,
     });
@@ -18,16 +20,16 @@ module.exports = class extends Command {
 
     if (!role)
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
 
     this.client.plugins.roles.autoRolesRemove(message.guild, role);
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
-        new SuccessEmbed({
+        new WarnEmbed({
           description: `Successfully removed ${role} from autoroles list.`,
-        }),
+        },message),
       ],
     });
   }

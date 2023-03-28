@@ -4,6 +4,7 @@ const {
   SuccessEmbed,
   WrongSyntaxEmbed,
   ErrorEmbed,
+  WarnEmbed,
 } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
@@ -11,7 +12,10 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "reactionrole-unlock",
+      aliases: ['rrunlock', 'rru'],
+      permission: PermissionFlagsBits.Administrator,
       enabled: true,
+      example: 'Unlock all reaction roles on the server',
       syntax: "reactionrole-unlock",
       staffOnly: true,
     });
@@ -19,11 +23,11 @@ module.exports = class extends Command {
   async execute(message, args) {
     this.client.plugins.roles.reactionRoleUnlock(message.guild.id);
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
-        new SuccessEmbed({
+        new WarnEmbed({
           description: `Successfully unlocked all reaction roles.`,
-        },author),
+        },message),
       ],
     });
   }

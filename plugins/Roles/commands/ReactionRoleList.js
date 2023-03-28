@@ -13,7 +13,9 @@ module.exports = class extends Command {
     super(client, {
       name: "reactionrole-list",
       enabled: true,
+      aliases: ['rrlist', 'rrl'],
       permission: PermissionFlagsBits.Administrator,
+      example: 'List all active reaction roles on the server',
       syntax: "reactionrole-list",
       staffOnly: true,
     });
@@ -24,19 +26,19 @@ module.exports = class extends Command {
     );
 
     if (!roles.length)
-      return message.reply({
-        embeds: [new ErrorEmbed({ description: "No reaction roles found." })],
-      },author);
+      return message.channel.send({
+        embeds: [new ErrorEmbed({ description: "No reaction roles found." },message)],
+      },message);
 
     let index = 1;
-    await message.reply({
+    await message.channel.send({
       embeds: [
         new DefaultEmbed({
           title: "Reaction Roles List",
           description: `${roles
             .map(
               (x) =>
-                `**#${index++}** [Message](https://discord.com/channels/${
+                `[Reaction Role ${index++}](https://discord.com/channels/${
                   message.guild.id
                 }/${x.channel_id}/${x.message_id}) ${x.emoji} <@&${x.role_id}>`
             )

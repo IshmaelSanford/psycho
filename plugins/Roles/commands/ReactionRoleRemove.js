@@ -4,6 +4,7 @@ const {
   SuccessEmbed,
   WrongSyntaxEmbed,
   ErrorEmbed,
+  WarnEmbed,
 } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
@@ -12,8 +13,10 @@ module.exports = class extends Command {
     super(client, {
       name: "reactionrole-remove",
       enabled: true,
+      aliases: ['rrremove', 'rrrem', 'rrr'],
       permission: PermissionFlagsBits.Administrator,
-      syntax: "reactionrole-remove <channel> <message_id> <emoji>",
+      example: 'Remove reaction role(s) on messages',
+      syntax: "reactionrole-remove <channel> <message_id> [--all] [<emoji>]",
       staffOnly: true,
     });
   }
@@ -21,39 +24,60 @@ module.exports = class extends Command {
     const channel = message.mentions.channels.first();
     const message_id = args[1];
     const emoji = args[2];
-
-    if (!channel || !message_id || !emoji)
+    const allFlag = args.includes("--all");
+  
+    if (!channel || !message_id || (!emoji && !allFlag)) {
       return message.reply({
         embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
-
-    this.client.plugins.roles.reactionRoleRemove(
-      message.guild.id,
-      channel.id,
-      message_id,
-      emoji
-    );
-
+    }
+  
     try {
       let msg = await channel.messages.fetch(message_id);
-      let reaction = await msg.reactions.cache.get(emoji);
-      await reaction.users.remove(this.client.user.id);
+  
+      if (allFlag) {
+        const reactionRoleList = this.client.plugins.roles.getReactionRoleList(
+          message.guild.id
+        );
+  
+        for (const rr of reactionRoleList) {
+          if (rr.message_id === message_id) {
+            const reaction = msg.reactions.cache.get(rr.emoji);
+            if (reaction) {
+              await reaction.remove();
+            }
+          }
+        }
+  
+        this.client.plugins.roles.reactionRoleRemoveAll(message.guild.id, message_id);
+        
+      } else {
+        this.client.plugins.roles.reactionRoleRemove(
+          message.guild.id,
+          message_id,
+          emoji
+        );
+        let reaction = await msg.reactions.cache.get(emoji);
+        await reaction.remove(); // Remove all users' reactions, including the bot's
+      }
     } catch (error) {
-      return message.reply({
+      return message.channel.send({
         embeds: [
           new ErrorEmbed({
             description: `An error ocurred: Channel/Message ID or Emoji are not valid.`,
-          }),author,
+          }, message),
         ],
       });
     }
-
-    await message.reply({
+  
+    await message.channel.send({
       embeds: [
-        new SuccessEmbed({
-          description: `Successfully deleted reaction role for ${emoji}.`,
-        },author),
+        new WarnEmbed({
+          description: allFlag
+            ? `Successfully deleted all reaction roles for the message.`
+            : `Successfully deleted reaction role for ${emoji}.`,
+        }, message),
       ],
     });
-  }
+  }  
 };

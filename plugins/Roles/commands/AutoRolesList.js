@@ -13,7 +13,9 @@ module.exports = class extends Command {
     super(client, {
       name: "autorolelist",
       enabled: true,
+      aliases: ['arlist', 'arl'],
       permission: PermissionFlagsBits.Administrator,
+      example: 'List all active auto roles on the server',
       syntax: "autorole-list",
       staffOnly: true,
     });
@@ -23,10 +25,10 @@ module.exports = class extends Command {
 
     if (!roles.length)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "No autoroles found." })],
+        embeds: [new ErrorEmbed({ description: "No autoroles found." },message)],
       });
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
         new DefaultEmbed({
           title: "Auto Roles List",

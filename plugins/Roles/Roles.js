@@ -1,5 +1,13 @@
 const Enmap = require("enmap");
 
+const userroles = new Enmap({
+  name: "userroles",
+  autoEnsure: {
+    roles: [],
+  },
+});
+
+
 const autoroles = new Enmap({
   name: "autoroles",
   autoEnsure: {
@@ -20,8 +28,14 @@ class RolesPlugin {
     this.client = client;
     this.autoroles = autoroles;
     this.reactionroles = reactionroles;
+    this.userroles = userroles;
   }
 
+  saveUserRole(guild, user, role) {
+    this.userroles.push(`${guild.id}_${user.id}`, role.id, "roles");
+  }
+  
+  
   autoRolesAdd(guild, role) {
     autoroles.push(guild.id, role.id, "roles");
   }
@@ -33,16 +47,23 @@ class RolesPlugin {
   }
 
   getAutoRolesList(guild) {
-    return autoroles.get(guild.id, "roles");
+    return autoroles.get(guild.id, "roles") || [];
   }
 
-  reactionRoleAdd(guild_id, channel_id, message_id, emoji, role_id) {
+  reactionRoleAdd(guild_id, channel_id, message_id, emoji, role_id, options = {}) {
     reactionroles.push(
       guild_id,
-      { channel_id, message_id, emoji, role_id },
+      {
+        channel_id,
+        message_id,
+        emoji,
+        role_id,
+        ...options,
+      },
       "data"
     );
   }
+
   reactionRoleRemove(guild_id, message_id, emoji) {
     try {
       reactionroles.remove(
@@ -53,12 +74,13 @@ class RolesPlugin {
     } catch (error) {}
   }
   reactionRoleRemoveAll(guild_id, message_id) {
-    reactionroles.remove(
-      guild_id,
-      (role) => role.message_id === message_id,
-      "data"
-    );
+    const filteredRoles = reactionroles
+      .get(guild_id, "data")
+      .filter((role) => role.message_id !== message_id);
+    reactionroles.set(guild_id, filteredRoles, "data");
   }
+  
+
   reactionRoleClear(guild_id) {
     reactionroles.set(guild_id, [], "data");
   }
