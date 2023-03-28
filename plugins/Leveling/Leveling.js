@@ -11,12 +11,14 @@ const db = new Enmap({
     cooldowns: {
       nextMessage: 0,
     },
+    backgroundUrl: null,
   },
 });
 
 const settings = new Enmap({
   name: "lvl-settings",
   autoEnsure: {
+    leveling_enabled: false,
     boosters: [],
     xp_rate: 1.0,
     ignoredChannels: [],
@@ -25,7 +27,7 @@ const settings = new Enmap({
     level_up_channel: null,
     level_up_message: "🎉 Level up {user}! You are now **{level} level**.",
     roles: [],
-    stack_enabled: false,
+    stack_enabled: true,
   },
 });
 
@@ -35,6 +37,50 @@ class LevelingPlugin {
     this.database = db;
     this.settings = settings;
   }
+
+  async setLevelAndXP(guild, user, level, xp) {
+    this.database.set(`${guild.id}-${user.id}`, level, "stats.level");
+    this.database.set(`${guild.id}-${user.id}`, xp, "stats.xp");
+  }
+
+  async setUserCardColor(guild, user, color) {
+    this.database.set(`${guild.id}-${user.id}`, color, "cardColor");
+  }
+
+  async getUserCardColor(guild, user) {
+    return this.database.get(`${guild.id}-${user.id}`, "cardColor");
+  }
+
+  async setUserStatus(guild, user, status) {
+    this.database.set(`${guild.id}-${user.id}`, status, "customStatus");
+  }
+
+  async getUserStatus(guild, user) {
+    return this.database.get(`${guild.id}-${user.id}`, "customStatus");
+  }
+
+  async getUserBackground(guild, user) {
+    return this.database.get(`${guild.id}-${user.id}`, "backgroundUrl");
+  }
+
+  async setUserBackground(guild, user, imageUrl) {
+    this.database.set(`${guild.id}-${user.id}`, imageUrl, "backgroundUrl");
+  }
+
+
+  resetXPRate(guild) {
+    return this.settings.set(guild.id, 1.0, "xp_rate");
+  }
+
+  setLevelingEnabled(guild, status) {
+    this.settings.set(guild.id, status, "leveling_enabled");
+  }
+  
+  getLevelingEnabled(guild) {
+    const status = this.settings.get(guild.id, "leveling_enabled");
+    return status;
+  }  
+  
 
   getData(guild, user) {
     return this.database.get(`${guild.id}-${user.id}`);
@@ -51,18 +97,20 @@ class LevelingPlugin {
   setXPRate(guild, rate) {
     return this.settings.set(guild.id, rate, "xp_rate");
   }
-  async addXP(member, amount = null) {
+  async addXP(member, amount) {
     let earn;
     if (!amount) {
-      earn = Math.floor(
-        Math.random() * 3 * this.getXPRate(member.guild.id) * booster_rate
-      );
+      earn = Math.floor(Math.random() * 3 * this.getXPRate(member.guild));
     } else {
       earn = Math.floor(amount);
     }
 
-    this.database.math(`${guild.id}-${member.id}`, "+", earn, "stats.xp");
-    return earn;
+    this.database.math(
+      `${member.guild.id}-${member.id}`,
+      "+",
+      earn,
+      "stats.xp"
+    );
   }
   async removeXP(guild, user, amount = 1) {
     this.database.math(`${guild.id}-${user.id}`, "-", amount, "stats.xp");
@@ -96,7 +144,7 @@ class LevelingPlugin {
   async addCooldown(guild, user) {
     this.database.set(
       `${guild.id}-${user.id}`,
-      Date.now() + 60000,
+      Date.now() + 3000,
       "cooldowns.nextMessage"
     );
   }
@@ -164,6 +212,19 @@ class LevelingPlugin {
   }
   setLevelUpMessage(message, text) {
     this.settings.set(message.guild.id, text, "level_up_message");
+  }
+  addLevel(guild, member) {
+    const levelingData = this.getData(guild, member);
+
+    levelingData.stats.level += 1;
+
+    this.saveData(guild, member, levelingData);
+  }
+  saveData(guild, member, levelingData) {
+    this.database.set(`${guild.id}-${member.id}`, levelingData);
+  }
+  getLevelUpMessage(guild) {
+    return this.settings.get(guild.id, "level_up_message");
   }
 }
 

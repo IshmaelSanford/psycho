@@ -8,72 +8,82 @@ module.exports = class extends Event {
       enabled: true,
     });
   }
+
   async run(message) {
-    if (!message.guild) return;
-    if (message.author.bot) return;
+    if (this.shouldIgnoreMessage(message)) return;
 
-    const ignored_channels = this.client.plugins.leveling.getIgnoredChannels(
-      message.guild
-    );
-    const ignored_roles = this.client.plugins.leveling.getIgnoredRoles(
-      message.guild
-    );
+    this.handleLeveling(message);
+  }
 
-    if (ignored_channels.includes(message.channelId)) return;
-    if (ignored_roles.includes(message.member.roles.cache)) return;
+  shouldIgnoreMessage(message) {
+    if (!message.guild || message.author.bot) return true;
 
-    const { cooldowns } = this.client.plugins.leveling.getData(
-      message.guild,
-      message.member
-    );
+    const levelingEnabled = this.client.plugins.leveling.getLevelingEnabled(message.guild);
+    if (!levelingEnabled) return true;
+
+    const ignoredChannels = this.client.plugins.leveling.getIgnoredChannels(message.guild);
+    if (ignoredChannels.includes(message.channel.id)) return true;
+
+    const ignoredRoles = this.client.plugins.leveling.getIgnoredRoles(message.guild);
+    if (message.member.roles.cache.some(role => ignoredRoles.includes(role.id))) return true;
+
+    return false;
+  }
+
+  async handleLeveling(message) {
+    const { cooldowns } = this.client.plugins.leveling.getData(message.guild, message.member);
     this.client.plugins.leveling.addMessage(message.guild, message.member);
 
     if (Date.now() < cooldowns.nextMessage) return;
 
+    this.client.plugins.leveling.addXP(message.member);
     this.client.plugins.leveling.addCooldown(message.guild, message.member);
 
-    if (
-      await this.client.plugins.leveling.checkLevelUp(
-        message.guild,
-        message.member
-      )
-    ) {
-      this.client.plugins.leveling.addLevel(message.guild, message.member);
+    const levelingData = this.client.plugins.leveling.getData(message.guild, message.member);
+    const currentLevel = levelingData.stats.level;
 
-      const roles = this.client.plugins.leveling.getLevelRoles(message.guild);
+    if (await this.client.plugins.leveling.checkLevelUp(message.guild, message.member)) {
+      this.processLevelUp(message, currentLevel);
+    }
+  }
 
-      const stackStatus = this.client.plugins.leveling.getStackStatus(
-        message.guild
-      );
+  async processLevelUp(message, currentLevel) {
+    this.client.plugins.leveling.addLevel(message.guild, message.member);
 
-      for (let { role, amount } of roles) {
-        if (level + 1 === amount) {
-          if (!stackStatus) {
-            message.member.roles.remove(roles.map((x) => x.role));
-          }
-          await message.member.roles.add(role);
+    const roles = this.client.plugins.leveling.getLevelRoles(message.guild);
+    const stackStatus = this.client.plugins.leveling.getStackStatus(message.guild);
+
+    for (let { role, amount } of roles) {
+      if (currentLevel + 1 === amount) {
+        if (!stackStatus) {
+          message.member.roles.remove(roles.map((x) => x.role));
         }
+        await message.member.roles.add(role);
       }
+    }
 
-      let levelUpMessage = this.client.plugins
-        .getLevelUpMessage(message.guild)
-        .replace(/{user}/g, message.author)
-        .replace(/{level}/g, level + 1);
+    this.sendLevelUpMessage(message, currentLevel + 1);
+  }
 
-      const embed = new DefaultEmbed({
-        title: `🎉 Level up!`,
-        description: levelUpMessage,
-      });
+  sendLevelUpMessage(message, newLevel) {
+    let defaultLevelUpMessage = "🎉 Level up {user}! You are now **{level} level**.";
+    let customLevelUpMessage = this.client.plugins.leveling.getLevelUpMessage(message.guild);
 
-      let levelUpMessages = this.client.plugins.getLevelUpMessagesStatus(
-        message.guild
-      );
-      let levelUpChannel = this.client.plugins.getLevelUpChannel(message.guild);
+    let combinedLevelUpMessage = defaultLevelUpMessage.replace(/{user}/g, message.author).replace(/{level}/g, newLevel) + `\n*${customLevelUpMessage}*`;
 
-      if (levelUpMessages && levelUpChannel)
-        message.guild.channels.cache
-          .get(levelUpChannel)
-          ?.send({ embeds: [embed] });
+    const embed = new DefaultEmbed({
+      description: combinedLevelUpMessage,
+    });
+
+    let levelUpMessages = this.client.plugins.leveling.getLevelUpMessagesStatus(message.guild);
+    let levelUpChannel = this.client.plugins.leveling.getLevelUpChannel(message.guild);
+
+    if (levelUpMessages) {
+      if (levelUpChannel) {
+        message.guild.channels.cache.get(levelUpChannel)?.send({ embeds: [embed] });
+      } else {
+        message.channel.send({ embeds: [embed] });
+      }
     }
   }
 };
