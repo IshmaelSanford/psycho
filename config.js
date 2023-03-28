@@ -1,5 +1,6 @@
 module.exports = {
   owner_ids: ["398301517339426837"], // put your server id here
+  supporterGuildId: "1071561978742571100",
   defaultPrefix: "!",
   presence: {
     status: "dnd",
@@ -14,6 +15,7 @@ module.exports = {
     color: "#0096ff",
   },
   economy: {
+    defaultCurrencyName: "credits",
     max_rob_earn: 100,
     jobs: [
       // job names for /work command
