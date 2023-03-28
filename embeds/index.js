@@ -4,4 +4,5 @@ module.exports = {
   SuccessEmbed: require("./SuccessEmbed"),
   WrongSyntaxEmbed: require("./WrongSyntaxEmbed"),
   WarnEmbed: require('./WarnEmbed'),
+  WarnEmbedDm: require('./WarnEmbedDm'),
 };
