@@ -29,7 +29,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },message)],
       });
     }
 
@@ -43,7 +43,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't manage roles!",
-          }),
+          },message),
         ],
       });
     }
@@ -52,7 +52,7 @@ module.exports = class extends Command {
 
     if (!subcommand) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -64,7 +64,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: `You can't have more than ${roleLimit} roles!`,
-            }),
+            },message),
           ],
         });
       }
@@ -73,7 +73,7 @@ module.exports = class extends Command {
 
       if (!roleName) {
         return message.reply({
-          embeds: [new WrongSyntaxEmbed(this.name, "guild-roles add <name>")],
+          embeds: [new WrongSyntaxEmbed(this.client, message, this)],
         });
       }
 
@@ -84,7 +84,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This role already exists!",
-            }),
+            },message),
           ],
         });
       }
@@ -97,7 +97,7 @@ module.exports = class extends Command {
         embeds: [
           new SuccessEmbed({
             description: `Successfully added role \`${roleName}\`!`,
-          }),
+          },message),
         ],
       });
     } else if (subcommand === "remove") {
@@ -105,9 +105,7 @@ module.exports = class extends Command {
 
       if (!roleName) {
         return message.reply({
-          embeds: [
-            new WrongSyntaxEmbed(this.name, "guild-roles remove <name>"),
-          ],
+          embeds: [new WrongSyntaxEmbed(this.client, message, this)],
         });
       }
 
@@ -118,7 +116,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This role doesn't exist!",
-            }),
+            },message),
           ],
         });
       }
@@ -135,7 +133,7 @@ module.exports = class extends Command {
         embeds: [
           new SuccessEmbed({
             description: `Successfully removed role \`${roleName}\`!`,
-          }),
+          },message),
         ],
       });
     } else if (subcommand === "list") {
@@ -151,12 +149,7 @@ module.exports = class extends Command {
 
       if (!user) {
         return message.reply({
-          embeds: [
-            new WrongSyntaxEmbed(
-              this.name,
-              "guild-roles adduser <user> <name>"
-            ),
-          ],
+          embeds: [new WrongSyntaxEmbed(this.client, message, this)],
         });
       }
 
@@ -167,7 +160,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This role doesn't exist!",
-            }),
+            },message),
           ],
         });
       }
@@ -179,7 +172,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This user is not in your guild!",
-            }),
+            },message),
           ],
         });
       }
@@ -189,7 +182,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This user already has this role!",
-            }),
+            },message),
           ],
         });
       }
@@ -202,7 +195,7 @@ module.exports = class extends Command {
         embeds: [
           new SuccessEmbed({
             description: `Successfully added role \`${roleName}\` to ${user}!`,
-          }),
+          },message),
         ],
       });
     } else if (subcommand === "removeuser") {
@@ -211,12 +204,7 @@ module.exports = class extends Command {
 
       if (!user) {
         return message.reply({
-          embeds: [
-            new WrongSyntaxEmbed(
-              this.name,
-              "guild-roles removeuser <user> <name>"
-            ),
-          ],
+          embeds: [new WrongSyntaxEmbed(this.client, message, this)],
         });
       }
 
@@ -227,7 +215,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This role doesn't exist!",
-            }),
+            },message),
           ],
         });
       }
@@ -239,7 +227,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This user is not in your guild!",
-            }),
+            },message),
           ],
         });
       }
@@ -249,7 +237,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "You don't have this role!",
-            }),
+            },message),
           ],
         });
       }
@@ -262,7 +250,7 @@ module.exports = class extends Command {
         embeds: [
           new SuccessEmbed({
             description: `Successfully removed role \`${roleName}\` from ${user}!`,
-          }),
+          },message),
         ],
       });
     } else if (subcommand === "listuser") {
@@ -270,9 +258,7 @@ module.exports = class extends Command {
 
       if (!user) {
         return message.reply({
-          embeds: [
-            new WrongSyntaxEmbed(this.name, "guild-roles listuser <user>"),
-          ],
+          embeds: [new WrongSyntaxEmbed(this.client, message, this)],
         });
       }
 
@@ -283,7 +269,7 @@ module.exports = class extends Command {
           embeds: [
             new ErrorEmbed({
               description: "This user isn't in your guild!",
-            }),
+            },message),
           ],
         });
       }

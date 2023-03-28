@@ -24,7 +24,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },author)],
       });
     }
 
@@ -35,7 +35,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You are not the owner of this guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -60,13 +60,13 @@ module.exports = class extends Command {
     } else if (emoji?.startsWith("http"))
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `You cannot add default emojis!` }),
+          new ErrorEmbed({ description: `You cannot add default emojis!` },author),
         ],
       });
     else
-      return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
-      });
+    return message.reply({
+      embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+    });
 
     guild.icon = emoji;
 
@@ -76,7 +76,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully changed the guild icon!`,
-        }),
+        },message),
       ],
     });
   }

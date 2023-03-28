@@ -23,7 +23,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },message)],
       });
     }
 
@@ -34,7 +34,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You are the owner of this guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -47,7 +47,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `You have left the guild!`,
-        }),
+        },message),
       ],
     });
   }

@@ -21,7 +21,7 @@ module.exports = class extends Command {
 
     if (!colorRaw) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -34,7 +34,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The color you provided is not a valid color!",
-          }),
+          },message),
         ],
       });
     }
@@ -46,7 +46,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },author)],
       });
     }
 
@@ -57,7 +57,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You are not the owner of this guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -70,7 +70,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully changed the guild color to \`${colorRaw}\`!`,
-        }),
+        },message),
       ],
     });
   }

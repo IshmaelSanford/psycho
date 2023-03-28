@@ -28,7 +28,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `**${user.tag}** is not in a guild.`,
-          }),
+          },message),
         ],
       });
     }

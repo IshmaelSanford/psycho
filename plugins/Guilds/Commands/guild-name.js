@@ -20,7 +20,7 @@ module.exports = class extends Command {
 
     if (!name) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -31,7 +31,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },message)],
       });
     }
 
@@ -42,7 +42,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You are not the owner of this guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -52,7 +52,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The guild name must be less than 32 characters!",
-          }),
+          },message),
         ],
       });
     }
@@ -65,7 +65,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully changed the guild name to \`${name}\`!`,
-        }),
+        },message),
       ],
     });
   }

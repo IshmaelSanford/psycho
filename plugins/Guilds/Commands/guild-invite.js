@@ -28,7 +28,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },message)],
       });
     }
 
@@ -42,7 +42,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't invite members!",
-          }),
+          },message),
         ],
       });
     }
@@ -51,7 +51,7 @@ module.exports = class extends Command {
 
     if (!member) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -60,7 +60,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "This member is already in your guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -75,7 +75,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "This member is already in a guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -115,7 +115,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The member didn't accept the invite!",
-          }),
+          },message),
         ],
         components: [],
       });
@@ -135,7 +135,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `${member} has joined ${guild.name}!`,
-        }),
+        },message),
       ],
       components: [],
     });

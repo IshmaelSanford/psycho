@@ -20,7 +20,7 @@ module.exports = class extends Command {
 
     if (!name) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -29,7 +29,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "The guild name cannot be longer than 32 characters.",
-          }),
+          },message),
         ],
       });
     }
@@ -44,7 +44,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You are already in a guild.",
-          }),
+          },message),
         ],
       });
     }
@@ -60,7 +60,7 @@ module.exports = class extends Command {
           new ErrorEmbed({
             description:
               "You do not have enough money to create a guild. You need $10,000,000.",
-          }),
+          },message),
         ],
       });
     }
@@ -92,7 +92,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `You have successfully created a guild with the name **${name}**.`,
-        }),
+        },message),
       ],
     });
   }

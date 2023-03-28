@@ -33,7 +33,7 @@ module.exports = class extends Command {
             description: `Page ${page} does not exist. There are only ${maxPage} page${
               maxPage === 1 ? "" : "s"
             }.`,
-          }),
+          },message),
         ],
       });
     }
@@ -45,7 +45,7 @@ module.exports = class extends Command {
             description: `Page ${page} does not exist. There are only ${maxPage} page${
               maxPage === 1 ? "" : "s"
             }.`,
-          }),
+          },message),
         ],
       });
     }
@@ -55,7 +55,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `There are no guilds in this server.`,
-          }),
+          },message),
         ],
       });
     }

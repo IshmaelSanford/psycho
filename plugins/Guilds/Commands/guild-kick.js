@@ -28,7 +28,7 @@ module.exports = class extends Command {
 
     if (!guild) {
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "You are not in a guild!" })],
+        embeds: [new ErrorEmbed({ description: "You are not in a guild!" },message)],
       });
     }
 
@@ -42,7 +42,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't kick members!",
-          }),
+          },message),
         ],
       });
     }
@@ -51,7 +51,7 @@ module.exports = class extends Command {
 
     if (!member) {
       return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
     }
 
@@ -60,7 +60,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "This member isn't in your guild!",
-          }),
+          },message),
         ],
       });
     }
@@ -70,7 +70,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't kick yourself!",
-          }),
+          },message),
         ],
       });
     }
@@ -86,7 +86,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: "You can't kick this member!",
-          }),
+          },message),
         ],
       });
     }
@@ -99,7 +99,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `${member} has been kicked!`,
-        }),
+        },message),
       ],
     });
   }
