@@ -5,6 +5,7 @@ const { getColorFromURL } = require("color-thief-node");
 const Settings = require('../../Settings/Settings');
 const {
   WrongSyntaxEmbed,
+  WarnEmbed,
 } = require("../../../embeds");
 
 
@@ -41,7 +42,14 @@ module.exports = class extends Command {
     const data = await response.json();
 
     if (!data.items || data.items.length === 0) {
-      return message.reply("No images found.");
+      return message.channel.send({
+        embeds: [
+          new WarnEmbed({
+            description:
+              `No images found for **${query}**`,
+          },message),
+        ],
+      });
     }
 
     let currentPage = 0;
@@ -97,7 +105,14 @@ module.exports = class extends Command {
     }
     
     const sentMessage = await message.reply("Loading image...");
-    await updateEmbed(sentMessage, currentPage);
+    try {
+      await updateEmbed(sentMessage, currentPage);
+    } catch (error) {
+      console.error(`Error updating embed: ${error.message}`);
+      const warnEmbed = new WarnEmbed({ description: `No results for **${query}**` },message)
+      return message.channel.send({ embeds: [warnEmbed] });
+    }
+
 
     const filter = (reaction, user) => {
       return ["⏪", "⏩"].includes(reaction.emoji.name) && user.id === message.author.id;
@@ -117,7 +132,18 @@ module.exports = class extends Command {
     });
 
     reactionCollector.on("end", () => {
-      sentMessage.reactions.removeAll();
+      const backArrow = "⏪";
+      const forwardArrow = "⏩";
+      const backReaction = sentMessage.reactions.cache.find((r) => r.emoji.name === backArrow);
+      const forwardReaction = sentMessage.reactions.cache.find((r) => r.emoji.name === forwardArrow);
+
+      if (backReaction) {
+        backReaction.users.fetch().then((users) => users.forEach((user) => backReaction.users.remove(user)));
+      }
+      if (forwardReaction) {
+        forwardReaction.users.fetch().then((users) => users.forEach((user) => forwardReaction.users.remove(user)));
+      }
+
     });
   }
 }
