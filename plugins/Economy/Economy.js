@@ -62,6 +62,49 @@ class EconomyPlugin {
     this.blackmarket = blackmarket;
     this.dropChannels = dropChannels;
   }
+  setUserCurrencyName(server_id, user_id, currencyName) {
+    const supporterGuildId = this.client.config.supporterGuildId;
+    const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
+    const supporterGuildMember = this.client.guilds.cache.get(supporterGuildId).members.cache.get(user_id);
+  
+    if (currentGuildMember && currentGuildMember.premiumSince || supporterGuildMember && supporterGuildMember.premiumSince) {
+      this.database.set(`${server_id}-${user_id}`, currencyName, "userCurrencyName");
+    }
+  }
+  setUserCurrencyIcon(server_id, user_id, icon) {
+    const supporterGuildId = this.client.config.supporterGuildId;
+    const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
+    const supporterGuildMember = this.client.guilds.cache.get(supporterGuildId).members.cache.get(user_id);
+  
+    if (currentGuildMember && currentGuildMember.premiumSince || supporterGuildMember && supporterGuildMember.premiumSince) {
+      this.database.set(`${server_id}-${user_id}`, icon, "currencyIcon");
+    }
+  }
+  setCreditCardBackgroundImage(server_id, user_id, imageUrl) {
+    const supporterGuildId = this.client.config.supporterGuildId;
+    const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
+    const supporterGuildMember = this.client.guilds.cache.get(supporterGuildId).members.cache.get(user_id);
+  
+    if (currentGuildMember && currentGuildMember.premiumSince || supporterGuildMember && supporterGuildMember.premiumSince) {
+      this.database.set(`${server_id}-${user_id}`, imageUrl, "creditCardBackgroundImage");
+    }
+  }
+  setCreditCardBackgroundColor(server_id, user_id, backgroundColor) {
+    this.database.set(`${server_id}-${user_id}`, backgroundColor, "creditCardBackgroundColor");
+  }
+  getTotalServerCash(server_id) {
+    const serverUsers = this.database.filter(
+      (value, key) => key.split("-")[0] === server_id
+    );
+    let totalCash = 0;
+    serverUsers.forEach((user) => {
+      totalCash += user.balance;
+    });
+    return totalCash;
+  }
+  setServerCurrencyName(server_id, currencyName) {
+    this.database.set(server_id, currencyName, "serverCurrencyName");
+  }  
   randomId() {
     return crypto.randomUUID().split("-")[0];
   }
@@ -547,16 +590,11 @@ class EconomyPlugin {
     return items[Math.floor(Math.random() * items.length)];
   }
 
-  parseAmount(amount) {
-    if (amount < 1000) return amount.toFixed(2);
-    if (amount < 1000000)
-      return amount % 500 === 0
-        ? amount / 1000 + "K"
-        : (amount / 1000).toFixed(2) + "K";
-    if (amount >= 1000000)
-      return amount % 500000 === 0
-        ? amount / 1000000 + "M"
-        : (amount / 1000000).toFixed(2) + "M";
+  parseAmount(amount, server_id, user_id) {
+    const userCurrencyName = this.database.get(`${server_id}-${user_id}`, "userCurrencyName");
+    const serverCurrencyName = this.database.get(server_id, "serverCurrencyName") || this.client.config.economy.defaultCurrencyName;
+    const currencyName = userCurrencyName || serverCurrencyName;
+    return parseInt(amount).toLocaleString() + ' ' + currencyName;
   }
 }
 

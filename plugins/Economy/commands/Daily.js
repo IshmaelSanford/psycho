@@ -17,7 +17,7 @@ module.exports = class extends Command {
       message.guild.id,
       message.author.id
     );
-
+  
     if (Date.now() < cooldowns.nextDaily)
       return message.reply({
         embeds: [
@@ -27,14 +27,14 @@ module.exports = class extends Command {
               .format(
                 "d [days] h [hours] m [minutes] s [seconds]"
               )}** before your next claim.`,
-          }),
+          },message),
         ],
       });
-
+  
     this.client.plugins.economy.daily(message.guild.id, message.author.id);
-
+  
     let K = 1;
-
+  
     if (
       this.client.plugins.economy.hasItemInInventory(
         message.guild.id,
@@ -47,7 +47,7 @@ module.exports = class extends Command {
         K = 2;
       }
     }
-
+  
     if (K === 2) {
       this.client.plugins.economy.addToBalance(
         message.guild.id,
@@ -55,13 +55,13 @@ module.exports = class extends Command {
         this.client.config.economy.daily
       );
     }
-
+  
     const lastDaily = this.client.plugins.economy.getStat(
       message.guild.id,
       message.author.id,
       "lastDaily"
     );
-
+  
     if (Date.now() - lastDaily < 172800000) {
       this.client.plugins.economy.addAchievement(
         message.guild.id,
@@ -70,21 +70,23 @@ module.exports = class extends Command {
         200
       );
     }
-
+  
     this.client.plugins.economy.setStat(
       message.guild.id,
       message.author.id,
       "lastDaily",
       Date.now()
     );
-
+  
     message.reply({
       embeds: [
         new SuccessEmbed({
-          description: `Claimed daily reward of **$${this.client.plugins.economy.parseAmount(
-            this.client.config.economy.daily * K
+          description: `Claimed daily reward of **${this.client.plugins.economy.parseAmount(
+            this.client.config.economy.daily * K,
+            message.guild.id,
+            message.author.id
           )}**`,
-        }),
+        },message),
       ],
     });
   }
