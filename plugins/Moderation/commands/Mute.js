@@ -3,6 +3,7 @@ const { Command } = require("../../../structures");
 const {
   ErrorEmbed,
   SuccessEmbed,
+  WarnEmbed,
   WrongSyntaxEmbed,
   DefaultEmbed,
 } = require("../../../embeds");
@@ -15,6 +16,7 @@ module.exports = class extends Command {
       name: "mute",
       enabled: true,
       permission: PermissionFlagsBits.BanMembers,
+      aliases: ['timeout', 'm'],
       syntax: "mute <user> <time> [reason]",
       staffOnly: true,
     });
@@ -28,7 +30,17 @@ module.exports = class extends Command {
       });
     }
 
-    let duration = args[1];
+    if (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) {
+      return message.reply({
+        embeds: [
+          new WarnEmbed({
+            description: "You can't mute people higher than you",
+          }, message),
+        ],
+      });
+    }
+
+    let duration = args[1] || "30m";
 
     try {
       duration = await ms(duration);
@@ -38,11 +50,11 @@ module.exports = class extends Command {
           new ErrorEmbed({
             description:
               "Invalid time format. Format Example: **10m, 10h, 10d, 2w**..",
-          },message),
+          }, message),
         ],
       });
     }
-    const reason = args.slice(2).join(" ") || "No reason provided!";
+    const reason = args.slice(2).join(" ") || "No reason provided";
 
     await member.timeout(duration, reason);
 
@@ -52,7 +64,7 @@ module.exports = class extends Command {
           description: `User ${member} was temp-muted for ${ms(duration, {
             long: true,
           })}!`,
-        },message),
+        }, message),
       ],
     });
 

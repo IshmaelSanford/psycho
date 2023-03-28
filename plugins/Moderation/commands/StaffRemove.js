@@ -11,7 +11,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "stripstaff",
-      aliases: ['sstrip', 'staff remove'],
+      aliases: ['sstrip', 'staffremove'],
       enabled: true,
       permission: PermissionFlagsBits.BanMembers,
       syntax: "stripstaff <@user>",

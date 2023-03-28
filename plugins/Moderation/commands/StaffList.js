@@ -10,11 +10,11 @@ const {
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "staff list",
+      name: "stafflist",
       aliases: ['staffl'],
       enabled: true,
       permission: PermissionFlagsBits.BanMembers,
-      syntax: "staff list",
+      syntax: "stafflist",
     });
   }
   async execute(message, args) {
