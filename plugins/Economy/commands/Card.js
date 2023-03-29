@@ -10,7 +10,7 @@ GlobalFonts.registerFromPath(join(__dirname, '..', '..', '..', 'assets', 'fonts'
 
 
 
-async function createCreditCardImage(targetMember, targetUser, stats) {
+async function createCreditCardImage(client, message, targetMember, targetUser, stats, isSupporter) {
   const canvas = createCanvas(640, 400);
   const ctx = canvas.getContext("2d");
 
@@ -59,7 +59,7 @@ async function createCreditCardImage(targetMember, targetUser, stats) {
   // Draw 4 spaced white dots to represent an RFID
   const dotRadius = 5;
   const dotSpacing = 15;
-  const dotsX = 500;
+  const dotsX = 502;
   const dotsY = 270;
   ctx.fillStyle = "#FFFFFF";
 
@@ -70,21 +70,30 @@ async function createCreditCardImage(targetMember, targetUser, stats) {
     ctx.closePath();
   }
 
-  // Draw the wallet icon and cash balance
-  const walletIcon = await loadImage("./assets/images/money.png");
-  ctx.drawImage(walletIcon, 50, 200, 30, 30);
-  ctx.font = "28px 'GG Sans Normal'";
-  ctx.fillStyle = "#d4af37";
-  const cashText = `${stats.cash}`;
-  ctx.fillText(cashText, 90, 225);
-
-  // Draw the bag icon and gambled amount
-  const bagIcon = await loadImage("./assets/images/wallet.png");
-  ctx.drawImage(bagIcon, 50, 240, 30, 30);
+  // Draw the wallet icon and global cash balance
+  const walletIcon = await loadImage("./assets/images/wallet.png");
+  ctx.drawImage(walletIcon, 50, 140, 30, 30); // Decreased Y-coordinate
   ctx.font = "28px 'GG Sans Normal'";
   ctx.fillStyle = "#ffffff";
-  const gambledText = `${stats.gambled}`;
-  ctx.fillText(gambledText, 90, 265);
+  const globalCash = client.plugins.economy.getTotalGlobalCash(targetUser.id);
+  const globalCashText = isNaN(globalCash) ? `0 ${client.config.economy.defaultCurrencyName}` : `${client.plugins.economy.parseAmount(globalCash, message.guild.id, targetUser.id)}`;
+  ctx.fillText(globalCashText, 90, 165); // Decreased Y-coordinate
+
+  // Draw the custom wallet icon for supporters and server cash balance
+  const customWalletIcon = await loadImage(isSupporter ? "./assets/images/money.png" : "./assets/images/wallet.png");
+  ctx.drawImage(customWalletIcon, 50, 195, 30, 30); // Decreased Y-coordinate
+  ctx.font = "28px 'GG Sans Normal'";
+  ctx.fillStyle = "#d4af37";
+  const customCashText = `${client.plugins.economy.parseAmount(stats.cash, message.guild.id, targetUser.id)}`;
+  ctx.fillText(customCashText, 90, 220); // Decreased Y-coordinate
+
+  // Draw the bag icon and gambled amount
+  const bagIcon = await loadImage("./assets/images/dice.png");
+  ctx.drawImage(bagIcon, 50, 250, 30, 30); // Decreased Y-coordinate
+  ctx.font = "28px 'GG Sans Normal'";
+  ctx.fillStyle = "#ffffff";
+  const gambledText = `${client.plugins.economy.parseAmount(stats.gambled, message.guild.id, targetUser.id)}`;
+  ctx.fillText(gambledText, 90, 275); // Decreased Y-coordinate
 
   // Draw user's avatar
   const avatar = await loadImage(targetUser.displayAvatarURL({ format: 'png' }));
@@ -99,6 +108,13 @@ async function createCreditCardImage(targetMember, targetUser, stats) {
   ctx.font = "20px 'GG Sans Bold'";
   ctx.fillStyle = "#FFFFFF";
   ctx.fillText(`${targetMember.username}#${targetMember.discriminator}`, 130, 345);
+
+  // Draw "supporter+" text if the user is a supporter
+  if (isSupporter) {
+    ctx.font = "18px 'GG Sans Bold'";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("supporter+", 130, 375);
+  }
 
   const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'psy-credit-card.png' });
   return attachment;
@@ -115,11 +131,17 @@ module.exports = class extends Command {
   async execute(message, args) {
     const targetUser = message.mentions.users.first() || message.author;
     const targetMember = await message.guild.members.fetch(targetUser.id);
-
+  
     const { stats } = await this.client.plugins.economy.getData(
       message.guild.id,
       targetUser.id
     );
+  
+    // Check if the user is a supporter
+    const isSupporter = this.client.plugins.economy.isUserSupporter(message.guild.id, targetUser.id);
+  
+    // Get the custom currency name or use the default one
+    const currencyName = await this.client.plugins.economy.getUserCurrencyName(message.guild.id, targetUser.id) || "default_currency_name";
 
     if (stats.cash < 0) {
       stats.cash = 0;
@@ -168,7 +190,7 @@ module.exports = class extends Command {
       );
     }
 
-    const creditCard = await createCreditCardImage(targetMember, targetUser, stats);
+    const creditCard = await createCreditCardImage(this.client, message, targetMember, targetUser, stats, isSupporter);
 
     await message.channel.send({ files: [creditCard] });
   }

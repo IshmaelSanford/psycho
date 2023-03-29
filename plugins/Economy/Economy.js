@@ -62,6 +62,25 @@ class EconomyPlugin {
     this.blackmarket = blackmarket;
     this.dropChannels = dropChannels;
   }
+  getUserCurrencyName(server_id, user_id) {
+    return this.database.get(`${server_id}-${user_id}`, "userCurrencyName") || null;
+  }
+  getUserCurrencyIcon(server_id, user_id) {
+    return this.database.get(`${server_id}-${user_id}`, "userCurrencyIcon") || null;
+  }
+  getCreditCardBackgroundColor(server_id, user_id) {
+    return this.database.get(`${server_id}-${user_id}`, "creditCardBackgroundColor") || null;
+  }
+  getCreditCardBackgroundImage(server_id, user_id) {
+    return this.database.get(`${server_id}-${user_id}`, "creditCardBackgroundImage") || null;
+  }
+  isUserSupporter(server_id, user_id) {
+    const supporterGuildId = this.client.config.supporterGuildId;
+    const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
+    const supporterGuildMember = this.client.guilds.cache.get(supporterGuildId).members.cache.get(user_id);
+  
+    return (currentGuildMember && currentGuildMember.premiumSince) || (supporterGuildMember && supporterGuildMember.premiumSince);
+  }  
   setUserCurrencyName(server_id, user_id, currencyName) {
     const supporterGuildId = this.client.config.supporterGuildId;
     const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
@@ -93,14 +112,38 @@ class EconomyPlugin {
     this.database.set(`${server_id}-${user_id}`, backgroundColor, "creditCardBackgroundColor");
   }
   getTotalServerCash(server_id) {
-    const serverUsers = this.database.filter(
-      (value, key) => key.split("-")[0] === server_id
-    );
-    let totalCash = 0;
-    serverUsers.forEach((user) => {
-      totalCash += user.balance;
+    let totalServerCash = 0;
+  
+    this.database.forEach((value, key) => {
+      const current_server_id = key.split("-")[0];
+  
+      if (current_server_id === server_id) {
+        totalServerCash += value.cash;
+      }
     });
-    return totalCash;
+  
+    return totalServerCash;
+  }
+  getTotalGlobalCash(user_id) {
+    const serverUserIds = new Set(); // To store unique server-user ids
+  
+    // Collect all unique server-user ids
+    this.database.forEach((value, key) => {
+      const [current_server_id, current_user_id] = key.split("-");
+      if (current_user_id === user_id) {
+        serverUserIds.add(key);
+      }
+    });
+  
+    let totalGlobalCash = 0;
+  
+    // Iterate through each server-user id and sum up the cash
+    serverUserIds.forEach((server_user_id) => {
+      const userCash = this.database.get(server_user_id, "cash");
+      totalGlobalCash += userCash || 0;
+    });
+  
+    return totalGlobalCash;
   }
   setServerCurrencyName(server_id, currencyName) {
     this.database.set(server_id, currencyName, "serverCurrencyName");
