@@ -6,7 +6,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "wouldyourather",
-      enabled: true,
+      enabled: false,
       aliases: ["wyr"],
     });
   }
