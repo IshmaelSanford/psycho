@@ -20,11 +20,14 @@ module.exports = class extends Command {
 
     if (Date.now() < cooldowns.nextWeekly)
       return message.reply({
-        content: `❌ You need to wait **${moment
-          .duration(cooldowns.nextWeekly - Date.now())
-          .format(
-            "d [days] h [hours] m [minutes] s [seconds]"
-          )}** before your next claim.`,
+        embeds: [
+          new ErrorEmbed({
+            description: `You need to wait **${moment
+              .duration(cooldowns.nextWeekly - Date.now())
+              .format('d [days] h [hours] m [minutes] s [seconds]'
+              )}** before your next claim`
+          },message),
+        ],
       });
 
     this.client.plugins.economy.weekly(message.guild.id, message.author.id);
@@ -53,9 +56,15 @@ module.exports = class extends Command {
     }
 
     await message.reply({
-      content: `✅ Claimed weekly reward of **$${this.client.plugins.economy.parseAmount(
-        this.client.config.economy.weekly * K
-      )}**`,
+      embeds: [
+        new SuccessEmbed({
+          description: `Claimed weekly reward of **${this.client.plugins.economy.parseAmount(
+            this.client.config.economy.weekly * K,
+            message.guild.id,
+            message.author.id
+          )}**`,
+        },message),
+      ],
     });
   }
 };

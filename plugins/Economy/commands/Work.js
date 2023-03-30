@@ -26,7 +26,7 @@ module.exports = class extends Command {
                 long: true,
               }
             )}** before your next work.`,
-          }),
+          },message),
         ],
       });
 
@@ -63,11 +63,13 @@ module.exports = class extends Command {
 
     this.client.plugins.economy.searchSpecialItem(message);
 
+    const formattedEarnings = this.client.plugins.economy.parseAmount(earnings, message.guild.id, message.author.id);
+
     message.reply({
       embeds: [
         new SuccessEmbed({
-          description: `You have worked as \`${job}\` and earned **$${earnings}**`,
-        }),
+          description: `You have worked as \`${job}\` and earned **${formattedEarnings}**`,
+        },message),
       ],
     });
   }
