@@ -1,5 +1,6 @@
 const { Command } = require("../../../structures");
 const { DefaultEmbed, ErrorEmbed } = require("../../../embeds");
+const { getColorFromURL } = require("color-thief-node");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -28,7 +29,7 @@ module.exports = class extends Command {
     let color;
 
     try {
-      color = await getColorFromURL(guildIconURL);
+      color = await getColorFromURL(guildBannerURL);
     } catch (err) {
       console.error(`Error while processing image: ${err.message}`);
       color = "#23272A";
