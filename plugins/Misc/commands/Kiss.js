@@ -1,5 +1,6 @@
 const { Command } = require("../../../structures");
 const { DefaultEmbed } = require("../../../embeds");
+const { getColorFromURL } = require("color-thief-node");
 
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -30,8 +31,17 @@ module.exports = class extends Command {
 
     const randomGif = data.results[Math.floor(Math.random() * data.results.length)];
     const gifUrl = randomGif.media[0].gif.url;
+    let color;
+
+    try {
+      color = await getColorFromURL(gifUrl);
+    } catch (err) {
+      console.error(`Error while processing image: ${err.message}`);
+      color = "#23272A"; // Discord default color or any other fallback color
+    }
 
     const embed = new DefaultEmbed()
+      .setColor(color)
       .setTitle(
         `💋 ${message.author.username} kisses ${
           user.id !== message.author.id ? user.username : "themselves"
