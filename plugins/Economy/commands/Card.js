@@ -76,7 +76,7 @@ async function createCreditCardImage(client, message, targetMember, targetUser, 
   ctx.font = "28px 'GG Sans Normal'";
   ctx.fillStyle = "#ffffff";
   const globalCash = client.plugins.economy.getTotalGlobalCash(targetUser.id);
-  const globalCashText = isNaN(globalCash) ? `0 ${client.config.economy.defaultCurrencyName}` : `${client.plugins.economy.parseAmount(globalCash, message.guild.id, targetUser.id)}`;
+  const globalCashText = isNaN(globalCash) ? `0 ${client.config.economy.defaultCurrencyName}` : `${client.plugins.economy.parseAmount(globalCash, null, targetUser.id)}`;
   ctx.fillText(globalCashText, 90, 165); // Decreased Y-coordinate
 
   // Draw the custom wallet icon for supporters and server cash balance
@@ -87,7 +87,7 @@ async function createCreditCardImage(client, message, targetMember, targetUser, 
   const customCashText = `${client.plugins.economy.parseAmount(stats.cash, message.guild.id, targetUser.id)}`;
   ctx.fillText(customCashText, 90, 220); // Decreased Y-coordinate
 
-  // Draw the bag icon and gambled amount
+  // Draw the dice icon and gambled amount
   const bagIcon = await loadImage("./assets/images/dice.png");
   ctx.drawImage(bagIcon, 50, 250, 30, 30); // Decreased Y-coordinate
   ctx.font = "28px 'GG Sans Normal'";
@@ -105,13 +105,13 @@ async function createCreditCardImage(client, message, targetMember, targetUser, 
 
   // Draw user's name and discriminator
   ctx.restore();
-  ctx.font = "20px 'GG Sans Bold'";
+  ctx.font = "20px 'GG Sans Normal'";
   ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(`${targetMember.username}#${targetMember.discriminator}`, 130, 345);
+  ctx.fillText(`${targetUser.username}#${targetUser.discriminator}`, 130, 345);
 
   // Draw "supporter+" text if the user is a supporter
   if (isSupporter) {
-    ctx.font = "18px 'GG Sans Bold'";
+    ctx.font = "32px 'GG Sans Normal'";
     ctx.fillStyle = "#ffffff";
     ctx.fillText("supporter+", 130, 375);
   }
