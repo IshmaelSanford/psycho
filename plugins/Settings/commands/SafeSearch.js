@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed } = require("../../../embeds");
+const { SuccessEmbed, WarnEmbedDm } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
@@ -30,7 +30,7 @@ module.exports = class extends Command {
 
     await interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new WarnEmbedDm({
           description: `Safe search has been ${enabled ? "enabled" : "disabled"}.`,
         }),
       ],
