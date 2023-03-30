@@ -147,7 +147,7 @@ class EconomyPlugin {
   }
   setServerCurrencyName(server_id, currencyName) {
     this.database.set(server_id, currencyName, "serverCurrencyName");
-  }  
+  }
   randomId() {
     return crypto.randomUUID().split("-")[0];
   }
@@ -401,18 +401,18 @@ class EconomyPlugin {
 
   async work(server_id, user_id) {
     const jobs = this.client.config.economy.jobs;
-
-    const job = jobs[Math.floor(Math.random()) * jobs.length];
-
+  
+    const job = jobs[Math.floor(Math.random() * jobs.length)];
+  
     const earnings = Math.floor(Math.random() * 1000);
-
+  
     await this.addToBalance(server_id, user_id, earnings);
     await this.database.set(
       `${server_id}-${user_id}`,
       Date.now() + 90000,
       "cooldowns.nextWork"
     );
-
+  
     return { job, earnings };
   }
 
@@ -633,8 +633,8 @@ class EconomyPlugin {
     return items[Math.floor(Math.random() * items.length)];
   }
 
-  parseAmount(amount, server_id, user_id) {
-    const userCurrencyName = this.database.get(`${server_id}-${user_id}`, "userCurrencyName");
+  parseAmount(amount, server_id, user_id, isSupporter = false) {
+    const userCurrencyName = isSupporter ? this.database.get(`${server_id}-${user_id}`, "userCurrencyName") : null;
     const serverCurrencyName = this.database.get(server_id, "serverCurrencyName") || this.client.config.economy.defaultCurrencyName;
     const currencyName = userCurrencyName || serverCurrencyName;
     return parseInt(amount).toLocaleString() + ' ' + currencyName;
