@@ -15,7 +15,7 @@ module.exports = class extends Command {
       name: "embedcode",
       enabled: true,
       permission: 8,
-      aliases: ['embcode'],
+      aliases: ['embcode', 'embc', 'ec'],
       syntax: "embcode <channel_id> <message_id>",
       about: 'Check an embeds code',
       example: 'embcode 000000 000000',
