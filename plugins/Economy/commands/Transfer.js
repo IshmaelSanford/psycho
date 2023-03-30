@@ -7,17 +7,21 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "transfer",
+      aliases: ['give', 'wire'],
       enabled: true,
+      syntax: 'transfer <user> <amount>',
+      about: 'Give a user some of your money',
     });
   }
   async execute(message, args) {
     const user = message.mentions.users.first();
     const amount = parseInt(args[1]);
 
-    if (!user || !amount)
-      return message.reply(
-        `❌ Wrong syntax. Use: \`transfer <@user> <amount>\``
-      );
+    if (args.length === 0) {
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
 
     const { stats } = this.client.plugins.economy.getData(
       message.guild.id,
@@ -29,7 +33,7 @@ module.exports = class extends Command {
         embeds: [
           new ErrorEmbed({
             description: `You don't have enough money in cash.`,
-          }),
+          },message),
         ],
       });
     }
@@ -46,10 +50,10 @@ module.exports = class extends Command {
     );
 
     const embed = new SuccessEmbed({
-      description: `Successfully transfered **$${this.client.plugins.economy.parseAmount(
+      description: `Successfully transfered **${this.client.plugins.economy.parseAmount(
         amount
       )}** to ${user}'s balance.`,
-    });
+    },message);
 
     await message.reply({ embeds: [embed] });
   }
