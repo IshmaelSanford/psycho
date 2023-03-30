@@ -29,7 +29,7 @@ module.exports = class extends Command {
     if (!inventory.length)
       return message.channel.send({
         embeds: [
-          new ErrorEmbed({ description: "This user doesn't have any items." }),
+          new ErrorEmbed({ description: "This user doesn't have any items." },message),
         ],
       });
 
