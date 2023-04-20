@@ -1,12 +1,12 @@
 module.exports = {
-  owner_ids: ["398301517339426837"], // put your server id here
+  owner_ids: ["398301517339426837"],
   supporterGuildId: "1071561978742571100",
-  defaultPrefix: "!",
+  defaultPrefix: ",",
   presence: {
-    status: "dnd",
+    // status: "dnd",
     activities: [
       {
-        name: "Psycho Syndicate", // text of your bot status
+        name: "Psycho Syndicate",
         type: 5, // 0 - 5
       },
     ],
