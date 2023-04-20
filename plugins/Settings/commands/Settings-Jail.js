@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, DefaultEmbed } = require("../../../embeds");
+const { SuccessEmbedDm, DefaultEmbed } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
@@ -82,7 +82,7 @@ module.exports = class extends Command {
 
       interaction.editReply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Updated jail role.`,
           }),
         ],
@@ -98,7 +98,7 @@ module.exports = class extends Command {
 
       interaction.editReply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Renamed jail role.`,
           }),
         ],
@@ -117,7 +117,7 @@ module.exports = class extends Command {
 
       interaction.editReply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Updated jail log channel.`,
           }),
         ],

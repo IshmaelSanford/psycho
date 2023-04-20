@@ -2,9 +2,9 @@ const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits, resolveColor } = require("discord.js");
 const {
-  SuccessEmbed,
+  SuccessEmbedDm,
   DefaultEmbed,
-  ErrorEmbed,
+  ErrorEmbedDm,
   WrongSyntaxEmbed,
 } = require("../../../embeds");
 
@@ -80,7 +80,7 @@ module.exports = class extends Command {
     if (!channel.isTextBased()) {
       return interaction.reply({
         embeds: [
-          new ErrorEmbed({
+          new ErrorEmbedDm({
             description: "Channel must be text based",
           }),
         ],
@@ -92,7 +92,7 @@ module.exports = class extends Command {
     } catch (error) {
       return interaction.reply({
         embeds: [
-          new ErrorEmbed({
+          new ErrorEmbedDm({
             description: "Invalid color",
           }),
         ],
@@ -114,7 +114,7 @@ module.exports = class extends Command {
 
     interaction.reply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Goodbye message has been configured.`,
         }),
       ],

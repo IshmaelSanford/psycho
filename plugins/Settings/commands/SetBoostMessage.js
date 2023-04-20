@@ -1,7 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder, EmbedBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
-const { SuccessEmbed, ErrorEmbed } = require("../../../embeds");
+const { SuccessEmbedDm, ErrorEmbedDm } = require("../../../embeds");
 
 const { resolveColor } = require("discord.js");
 
@@ -50,7 +50,7 @@ module.exports = class extends Command {
     } catch (error) {
       return interaction.editReply({
         embeds: [
-          new ErrorEmbed({ description: `Some parameters are not valid.` }),
+          new ErrorEmbedDm({ description: `Some parameters are not valid.` }),
         ],
       });
     }
@@ -62,7 +62,7 @@ module.exports = class extends Command {
 
     interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Updated message embed for new boost event.`,
         }),
       ],

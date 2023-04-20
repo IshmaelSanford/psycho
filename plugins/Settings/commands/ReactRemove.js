@@ -1,6 +1,6 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, ErrorEmbed } = require("../../../embeds");
+const { SuccessEmbedDm, ErrorEmbedDm } = require("../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
@@ -34,7 +34,7 @@ module.exports = class extends Command {
 
     await interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Successfuly removed react for message \`${message}\`.`,
         }),
       ],

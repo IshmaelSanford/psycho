@@ -1,6 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
+const { SuccessEmbedDm, DefaultEmbed } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -28,7 +29,7 @@ module.exports = class extends Command {
 
     interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Removed ${channel} from lock ignored channels.`,
         }),
       ],

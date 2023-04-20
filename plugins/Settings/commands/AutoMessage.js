@@ -2,8 +2,8 @@ const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
 const {
-  SuccessEmbed,
-  ErrorEmbed,
+  SuccessEmbedDm,
+  ErrorEmbedDm,
   WrongSyntaxEmbed,
   DefaultEmbed,
 } = require("../../../embeds");
@@ -68,7 +68,7 @@ module.exports = class extends Command {
       if (!time) {
         interaction.reply({
           embeds: [
-            new ErrorEmbed({
+            new ErrorEmbedDm({
               description: "Invalid time",
             }),
           ],
@@ -85,7 +85,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Successfully added auto message to ${channel}`,
           }),
         ],
@@ -100,7 +100,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Successfully removed auto message from ${channel}`,
           }),
         ],
@@ -141,7 +141,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: "Successfully cleared auto messages",
           }),
         ],

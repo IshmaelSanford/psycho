@@ -1,7 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
-const { SuccessEmbed } = require("../../../embeds");
+const { SuccessEmbedDm } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -26,7 +26,7 @@ module.exports = class extends Command {
 
     interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Set ${channel} for mod log channel.`,
         }),
       ],

@@ -1,7 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
-const { ErrorEmbed, SuccessEmbed } = require("../../../embeds");
+const { ErrorEmbedDm, SuccessEmbedDm } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -26,13 +26,13 @@ module.exports = class extends Command {
       await interaction.guild.edit({ icon: url });
     } catch (error) {
       return interaction.editReply({
-        embeds: [new ErrorEmbed({ description: `Invalid image.` })],
+        embeds: [new ErrorEmbedDm({ description: `Invalid image.` })],
       });
     }
 
     await interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Successfully changed guild icon.`,
         }),
       ],

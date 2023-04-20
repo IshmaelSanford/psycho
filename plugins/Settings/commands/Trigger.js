@@ -2,8 +2,8 @@ const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
 const {
-  SuccessEmbed,
-  ErrorEmbed,
+  SuccessEmbedDm,
+  ErrorEmbedDm,
   WrongSyntaxEmbed,
   DefaultEmbed,
 } = require("../../../embeds");
@@ -68,7 +68,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Added trigger \`${trigger}\` with response \`${response}\``,
           }),
         ],
@@ -80,7 +80,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: `Removed trigger \`${trigger}\``,
           }),
         ],
@@ -93,7 +93,7 @@ module.exports = class extends Command {
       if (!triggers.length) {
         return interaction.reply({
           embeds: [
-            new ErrorEmbed({
+            new ErrorEmbedDm({
               description: "There are no current triggers.",
             }),
           ],
@@ -113,7 +113,7 @@ module.exports = class extends Command {
 
       interaction.reply({
         embeds: [
-          new SuccessEmbed({
+          new SuccessEmbedDm({
             description: "Cleared all triggers",
           }),
         ],

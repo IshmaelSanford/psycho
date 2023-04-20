@@ -1,7 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
-const { SuccessEmbed } = require("../../../embeds");
+const { SuccessEmbedDm } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -193,7 +193,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Added blacklisted word.`,
             }),
           ],
@@ -208,7 +208,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Removed blacklisted word.`,
             }),
           ],
@@ -228,7 +228,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Cleared bad filter words.`,
             }),
           ],
@@ -248,7 +248,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Updated nickname filter settings.`,
             }),
           ],
@@ -268,7 +268,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Updated caps filter settings.`,
             }),
           ],
@@ -288,7 +288,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Updated invites filter settings.`,
             }),
           ],
@@ -308,7 +308,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Updated mass mentions filter settings.`,
             }),
           ],
@@ -327,7 +327,7 @@ module.exports = class extends Command {
 
         interaction.editReply({
           embeds: [
-            new SuccessEmbed({
+            new SuccessEmbedDm({
               description: `Updated spam filter settings.`,
             }),
           ],

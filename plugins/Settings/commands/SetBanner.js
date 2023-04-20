@@ -1,7 +1,7 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { PermissionFlagsBits } = require("discord.js");
-const { ErrorEmbed } = require("../../../embeds");
+const { ErrorEmbedDm } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -27,7 +27,7 @@ module.exports = class extends Command {
     } catch (error) {
       return interaction.editReply({
         embeds: [
-          new ErrorEmbed({
+          new ErrorEmbedDm({
             description: `You don't have banner unlocked or image is not valid.`,
           }),
         ],
