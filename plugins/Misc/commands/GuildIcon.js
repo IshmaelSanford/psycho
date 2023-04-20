@@ -7,7 +7,7 @@ module.exports = class extends Command {
     super(client, {
       name: "guildicon",
       enabled: true,
-      aliases: ['gi'],
+      aliases: ['gi', 'servericon', 'i'],
       syntax: "gi",
       about: 'view the servers icon',
       example: 'gi',

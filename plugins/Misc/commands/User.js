@@ -8,7 +8,7 @@ module.exports = class extends Command {
     super(client, {
       name: "user",
       aliases: ["usr"],
-      enabled: true,
+      enabled: false,
     });
   }
   async execute(message) {

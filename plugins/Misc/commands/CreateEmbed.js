@@ -15,7 +15,7 @@ module.exports = class extends Command {
       name: "createembed",
       enabled: true,
       permission: 8,
-      aliases: ['embcreate'],
+      aliases: ['ce'],
       syntax: "embcreate <url>",
       about: 'Create an embed using Discohook',
       example: 'embcreate discohook.org/',

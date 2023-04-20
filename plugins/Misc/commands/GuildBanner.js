@@ -7,7 +7,7 @@ module.exports = class extends Command {
     super(client, {
       name: "guildbanner",
       enabled: true,
-      aliases: ['gb'],
+      aliases: ['gb', 'serverbanner', 'sb'],
       syntax: "gb",
       about: 'View the servers banner',
       example: 'gb',

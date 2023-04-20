@@ -22,34 +22,43 @@ module.exports = class extends Command {
     });
   }
   async execute(message, args) {
-    const channel_id = args[0];
-    const message_id = args[1];
-
-    if (!channel_id || !message_id)
+    const messageLink = args[0];
+  
+    if (!messageLink)
       return message.reply({
         embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
-    const channel = message.guild.channels.cache.get(channel_id);
-
+  
+    const messageLinkRegex = /https:\/\/discord.com\/channels\/\d+\/(\d+)\/(\d+)/;
+    const match = messageLink.match(messageLinkRegex);
+  
+    if (!match)
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Invalid message link." }, message)],
+      });
+  
+    const [, channelId, messageId] = match;
+    const channel = message.guild.channels.cache.get(channelId);
+  
     if (!channel)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid channel id." },message)],
+        embeds: [new ErrorEmbed({ description: "Invalid channel id." }, message)],
       });
-
-    const msg = await channel.messages.fetch(message_id);
-
+  
+    const msg = await channel.messages.fetch(messageId);
+  
     if (!msg)
       return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid message id." },message)],
+        embeds: [new ErrorEmbed({ description: "Invalid message id." }, message)],
       });
-
+  
     await message.reply({
       embeds: [
         new SuccessEmbed({
-          description: `**Message Embed(s):** \`\`\`js\n ${msg.embeds.map((x) =>
+          description: `**Message Embed(s):** \`\`\`js\n${msg.embeds.map((x) =>
             JSON.stringify(x.toJSON(), null, 2)
-          )} \n\`\`\``,
-        },message),
+          )}\n\`\`\``,
+        }, message),
       ],
     });
   }

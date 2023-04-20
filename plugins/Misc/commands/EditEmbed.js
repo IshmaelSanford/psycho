@@ -15,17 +15,44 @@ module.exports = class extends Command {
       name: "editembed",
       enabled: true,
       permission: 8,
-      aliases: ['embedit'],
-      syntax: "embedit <url> <channel_id> <message_id>",
+      aliases: ['ee'],
+      syntax: "embedit <url> <message_link>",
       about: 'Edit an existing embed with Discohook',
-      example: 'embedit discohook.org/ 000000 000000',
+      example: 'embedit discohook.org/ https://discord.com/channels/000000/000000',
     });
   }
+
   async execute(message, args) {
     const url = args[0];
+    const messageLink = args[1];
 
-    const channel_id = args[1];
-    const message_id = args[2];
+    if (!url || !messageLink)
+      return message.reply({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+
+    const messageLinkRegex = /https:\/\/discord.com\/channels\/\d+\/(\d+)\/(\d+)/;
+    const match = messageLink.match(messageLinkRegex);
+
+    if (!match)
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Invalid message link." }, message)],
+      });
+
+    const [, channelId, messageId] = match;
+    const channel = message.guild.channels.cache.get(channelId);
+
+    if (!channel)
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Invalid channel id." }, message)],
+      });
+
+    const msg = await channel.messages.fetch(messageId);
+
+    if (!msg)
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Invalid message id." }, message)],
+      });
 
     let res, data;
     try {
@@ -41,44 +68,24 @@ module.exports = class extends Command {
       data = JSON.parse(Buffer.from(base64, "base64").toString());
     } catch (error) {
       return await message.editReply({
-        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` },message)],
+        embeds: [new ErrorEmbed({ description: `Invalid type of URL!` }, message)],
       });
     }
 
     if (!data.messages.length || !data.messages[0].data.embeds?.length) {
       return message.reply({
         embeds: [
-          new ErrorEmbed({ description: `No valid embeds in this message.` },message),
+          new ErrorEmbed({ description: `No valid embeds in this message.` }, message),
         ],
       });
     }
 
-    if (!channel_id || !message_id)
-      return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
-      });
-
     const embeds = data.messages[0].data.embeds;
-
     let embedss = [];
 
     for (let embed of embeds) {
       embedss.push(new EmbedBuilder(embed));
     }
-
-    const channel = message.guild.channels.cache.get(channel_id);
-
-    if (!channel)
-      return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid channel id." },message)],
-      });
-
-    const msg = await channel.messages.fetch(message_id);
-
-    if (!msg)
-      return message.reply({
-        embeds: [new ErrorEmbed({ description: "Invalid message id." },message)],
-      });
 
     await msg.edit({
       embeds: embedss,
@@ -88,7 +95,7 @@ module.exports = class extends Command {
       embeds: [
         new SuccessEmbed({
           description: `Successfully edited message!`,
-        },message),
+        }, message),
       ],
     });
   }
