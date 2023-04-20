@@ -1,3 +1,3 @@
 const Client = require("./structures/Client");
-const client = new Client({ ws: { properties: { browser: "Discord iOS" }} });
+const client = new Client({ ws: { properties: config.wsProperties } });
 client.start();
