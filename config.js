@@ -2,7 +2,6 @@ module.exports = {
   owner_ids: ["398301517339426837"],
   supporterGuildId: "1071561978742571100",
   defaultPrefix: ",",
-  wsProperties: { browser: "Discord iOS" },
   presence: {
     // status: "dnd",
     activities: [

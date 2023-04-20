@@ -1,4 +1,0 @@
-services:
-  - name: my-bot-service
-    type: node
-    command: node index.js
