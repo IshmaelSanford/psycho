@@ -1,4 +1,4 @@
-const { SuccessEmbed, DefaultEmbed, ErrorEmbed } = require("../../../embeds");
+const { SuccessEmbedDm, DefaultEmbed, ErrorEmbedDm } = require("../../../embeds");
 const Event = require("../../../structures/Event");
 const { ChannelType, PermissionFlagsBits } = require("discord.js");
 
@@ -26,7 +26,7 @@ module.exports = class extends Event {
     if (ticket)
       return interaction.editReply({
         embeds: [
-          new ErrorEmbed({
+          new ErrorEmbedDm({
             description: `You already have opened ticket! <#${ticket.channel}>`,
           }),
         ],
@@ -81,7 +81,7 @@ module.exports = class extends Event {
 
     interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Successfully opened a ticket ${channel} for you.`,
         }),
       ],

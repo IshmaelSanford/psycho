@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, ErrorEmbed, DefaultEmbed } = require("../../../embeds");
+const { SuccessEmbedDm, ErrorEmbedDm, DefaultEmbed } = require("../../../embeds");
 const { Command } = require("../../../structures/");
 const { PermissionFlagsBits } = require("discord.js");
 const transcripts = require("discord-html-transcripts");
@@ -33,7 +33,7 @@ module.exports = class extends Command {
     if (!isTicketChannel)
       return interaction.editReply({
         embeds: [
-          new ErrorEmbed({
+          new ErrorEmbedDm({
             description: `This channel is not a ticket!`,
             ephemeral: true,
           }),
@@ -42,7 +42,7 @@ module.exports = class extends Command {
 
     await interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Ticket ${interaction.channel} will be closed in **5** seconds.`,
         }),
       ],
@@ -77,7 +77,7 @@ module.exports = class extends Command {
         if (interaction)
           await interaction.editReply({
             embeds: [
-              new ErrorEmbed({
+              new ErrorEmbedDm({
                 description: `Unable to delete the channel, please check bot's permissions.`,
               }),
             ],

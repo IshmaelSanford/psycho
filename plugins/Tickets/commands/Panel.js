@@ -6,7 +6,7 @@ const {
 } = require("@discordjs/builders");
 const { Command } = require("../../../structures/");
 const { PermissionFlagsBits, ButtonStyle } = require("discord.js");
-const { DefaultEmbed, SuccessEmbed } = require("../../../embeds");
+const { DefaultEmbed, SuccessEmbedDm } = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -57,7 +57,7 @@ module.exports = class extends Command {
 
     await interaction.editReply({
       embeds: [
-        new SuccessEmbed({
+        new SuccessEmbedDm({
           description: `Successfully created reaction pane in ${channel}.`,
         }),
       ],
