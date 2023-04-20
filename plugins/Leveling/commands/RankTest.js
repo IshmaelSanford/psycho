@@ -66,20 +66,23 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   const isLight = mainBrightness > 127;
   const adjustmentAmount = isLight ? 50 : -50;
 
-  ctx.roundRect = function (x, y, width, height, radius) {
+  ctx.roundRect = function (x, y, width, height, radius, roundedCorners) {
     if (typeof radius === "undefined") {
       radius = 5;
     }
+    if (typeof roundedCorners === "undefined") {
+      roundedCorners = { topLeft: true, topRight: true, bottomLeft: true, bottomRight: true };
+    }
     this.beginPath();
-    this.moveTo(x + radius, y);
-    this.lineTo(x + width - radius, y);
-    this.quadraticCurveTo(x + width, y, x + width, y + radius);
-    this.lineTo(x + width, y + height - radius);
-    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    this.lineTo(x + radius, y + height);
-    this.quadraticCurveTo(x, y + height, x, y + height - radius);
-    this.lineTo(x, y + radius);
-    this.quadraticCurveTo(x, y, x + radius, y);
+    this.moveTo(x + (roundedCorners.topLeft ? radius : 0), y);
+    this.lineTo(x + width - (roundedCorners.topRight ? radius : 0), y);
+    this[roundedCorners.topRight ? "quadraticCurveTo" : "lineTo"](x + width, y, x + width, y + radius);
+    this.lineTo(x + width, y + height - (roundedCorners.bottomRight ? radius : 0));
+    this[roundedCorners.bottomRight ? "quadraticCurveTo" : "lineTo"](x + width, y + height, x + width - radius, y + height);
+    this.lineTo(x + (roundedCorners.bottomLeft ? radius : 0), y + height);
+    this[roundedCorners.bottomLeft ? "quadraticCurveTo" : "lineTo"](x, y + height, x, y + height - radius);
+    this.lineTo(x, y + (roundedCorners.topLeft ? radius : 0));
+    this[roundedCorners.topLeft ? "quadraticCurveTo" : "lineTo"](x, y, x + radius, y);
     this.closePath();
     return this;
   };
@@ -89,11 +92,11 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   gradient.addColorStop(0, mainColor);
   gradient.addColorStop(1, adjustColor(mainColor, adjustmentAmount));
 
-  // Draw background rectangle with gradient
+  // Draw background rectangle with gradient and rounded corners
+  const cornerRadius = 75; // Adjust this value to modify the rounded corner radius
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
+  ctx.roundRect(0, 0, canvas.width, canvas.height, cornerRadius).fill();
+  
   // Define boosterImageHeight
   const boosterImageHeight = (2 / 5) * canvas.height;
   const backgroundUrl = await client.plugins.leveling.getUserBackground(message.guild, member.user);
@@ -101,7 +104,16 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   if (backgroundUrl) {
     try {
       const background = await loadImage(backgroundUrl);
+
+      // Create a clipping region with rounded top corners
+      const cornerRadius = 75; // Adjust this value to modify the rounded corner radius
+      ctx.save(); // Save the current context state
+      ctx.roundRect(0, 0, canvas.width, boosterImageHeight, cornerRadius, { topLeft: true, topRight: true, bottomLeft: false, bottomRight: false }).clip();
+
+      // Draw the booster image inside the clipping region
       ctx.drawImage(background, 0, 0, canvas.width, boosterImageHeight);
+
+      ctx.restore(); // Restore the context state to its previous state
     } catch (error) {
       console.error("Error loading background image:");
     }
@@ -151,7 +163,7 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
     ctx.beginPath();
     ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2 + 15, 0, Math.PI * 2, true);
     ctx.closePath();
-    ctx.fillStyle = mainColor;
+    ctx.fillStyle = gradient;
     ctx.fill();
 
     ctx.beginPath();
@@ -181,7 +193,7 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   ctx.beginPath();
   ctx.arc(statusIconX, statusIconY, statusIconSize / 2.5, 0, Math.PI * 2, true);
   ctx.closePath();
-  ctx.fillStyle = mainColor;
+  ctx.fillStyle = gradient;
   ctx.fill();
 
   ctx.beginPath();
@@ -235,8 +247,9 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   ctx.fillText(customStatus, avatarX, textStartY + 50);
 
   // Calculate XP to current level
+  const xpToNextLevel = 5 * (level ** 2) + 50 * level + 100;
   const xpToCurrentLevel = 5 * ((level - 1) ** 2) + 50 * (level - 1) + 100;
-  const xpInCurrentLevel = Math.max(0, xp - xpToCurrentLevel); // Ensure non-negative value
+  const xpInCurrentLevel = xp - xpToCurrentLevel;
 
   // Draw XP progress bar
   const progressBarWidth = canvas.width - 100;
@@ -257,7 +270,225 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
   ctx.clip();
 
   // Draw progress bar fill
+  const xpNeededForCurrentLevel = xpToNextLevel - xpToCurrentLevel;
+  const progressWidth = (xpInCurrentLevel / xpNeededForCurrentLevel) * progressBarWidth;
+  ctx.fillStyle = subColor;
+  //ctx.lineWidth = 2;
+  //ctx.strokeStyle = subColor;
+  ctx.roundRect(progressBarX, progressBarY, progressWidth, progressBarHeight, 20).fill();
+
+  // Restore canvas state
+  ctx.restore();
+
+  // Draw level and rank rectangles
+  const padding = 265; // Increase this value to make the rectangles wider
+  const levelRectWidth = ctx.measureText(`Level ${level}`).width + padding;
+  const rankRectWidth = ctx.measureText(`Rank ${rank}`).width + padding;
+  const rectHeight = 50; // Increase the rectangle height
+  const rectSpacing = 10; // Spacing between rectangles
+  const rectY = progressBarY - rectHeight - 10; // Position the rectangles above the progress bar
+
+  ctx.fillStyle = transparentColor;
+  ctx.roundRect(progressBarX, rectY, levelRectWidth, rectHeight, 10).fill();
+  ctx.roundRect(progressBarX + progressBarWidth - rankRectWidth - rectSpacing, rectY, rankRectWidth, rectHeight, 10).fill();
+
+  // Draw level and rank text
+  ctx.font = "bold 24px 'GG Sans Bold'";
+  ctx.fillStyle = "#FFFFFF";
+
+  const levelText = `Level ${level}`;
+  const rankText = `Rank ${rank}`;
+
+  const levelTextWidth = ctx.measureText(levelText).width;
+  const rankTextWidth = ctx.measureText(rankText).width;
+
+  const levelTextX = progressBarX + (levelRectWidth - levelTextWidth) / 2;
+  const rankTextX = progressBarX + progressBarWidth - rankRectWidth - rectSpacing + (rankRectWidth - rankTextWidth) / 2;
+
+  const textY = rectY + (rectHeight / 2) + 8; // 8 is approximately half the height of a 24px font
+
+  ctx.fillText(levelText, levelTextX, textY);
+  ctx.fillText(rankText, rankTextX, textY);
+
+  // Draw xpNeededText
+  const xpNeededText = `(${xp}/${5 * (level ** 2) + 50 * level + 100})`;
+  ctx.font = "24px 'GG Sans Semibold'";
+  ctx.fillStyle = cardColor;
+  ctx.fillText(xpNeededText, progressBarX + progressBarWidth - ctx.measureText(xpNeededText).width, progressBarY + progressBarHeight + 30);
+
+  // Send the image
+  const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'psy-rank-card-boost.png' });
+  return attachment;
+}
+
+
+
+async function createNonBoosterRankCard(client, message, member, xp, level, rank, targetUser) {
+  const canvas = createCanvas(800, 700); // Adjust the size for the booster card
+  const ctx = canvas.getContext("2d");
+
+  const cardColor = await client.plugins.leveling.getUserCardColor(message.guild, member.user);
+  const mainColor = cardColor || "#131313";
+  const subColor = cardColor || "#7289DA";
+  const transparentColor = hexToRGBA(mainColor, 0.5);
+  const textColor = isColorDark(mainColor) ? "#ffffff" : "#3e3e3e";
+  const userStatus = await client.plugins.leveling.getUserStatus(message.guild, member.user);
+  const prefix = await client.plugins.settings.prefix(message.guild);
+  const mainBrightness = colorBrightness(mainColor);
+  const isLight = mainBrightness > 127;
+  const adjustmentAmount = isLight ? 50 : -50;
+
+  ctx.roundRect = function (x, y, width, height, radius) {
+    if (typeof radius === "undefined") {
+      radius = 5;
+    }
+    this.beginPath();
+    this.moveTo(x + radius, y);
+    this.lineTo(x + width - radius, y);
+    this.quadraticCurveTo(x + width, y, x + width, y + radius);
+    this.lineTo(x + width, y + height - radius);
+    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.lineTo(x + radius, y + height);
+    this.quadraticCurveTo(x, y + height, x, y + height - radius);
+    this.lineTo(x, y + radius);
+    this.quadraticCurveTo(x, y, x + radius, y);
+    this.closePath();
+    return this;
+  };
+
+  // Create gradient
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, mainColor);
+  gradient.addColorStop(1, adjustColor(mainColor, adjustmentAmount));
+
+  // Draw background rectangle with gradient
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+  // Define boosterImageHeight
+  const boosterImageHeight = (2 / 5) * canvas.height;
+  const defaultBackgroundPath = './assets/images/defaultbgimg.jpeg';
+
+  try {
+    const backgroundUrl = await client.plugins.leveling.getUserBackground(message.guild, member.user);
+    const backgroundImage = backgroundUrl ? await loadImage(backgroundUrl) : await loadImage(defaultBackgroundPath);
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, boosterImageHeight);
+  } catch (error) {
+    console.error("Error loading background image:", error);
+    ctx.fillStyle = subColor;
+    ctx.fillRect(0, 0, canvas.width, backgroundHeight);
+  }
+
+  // Draw user's avatar
+  const avatarSize = 175;
+  const avatarX = 50;
+  const avatarY = boosterImageHeight - avatarSize / 2;
+
+  try {
+    const avatar = await loadImage(targetUser.displayAvatarURL({ format: "png", size: 128, dynamic: false }));
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2 + 15, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+    ctx.restore();
+  } catch (error) {
+    console.error("Error loading avatar image:");
+  }
+  
+  // Draw user's status icon
+  const status = member.presence.status;
+  const statusColor = {
+    online: "#43B581",
+    idle: "#FAA61A",
+    dnd: "#F04747",
+    offline: "#747F8D",
+  }[status];
+
+  // Update status icon position and size
+  const statusIconX = avatarX + avatarSize * 0.8;
+  const statusIconY = avatarY + avatarSize * 0.8;
+  const statusIconSize = avatarSize * 0.4;
+
+  ctx.beginPath();
+  ctx.arc(statusIconX, statusIconY, statusIconSize / 2.5, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(statusIconX, statusIconY, statusIconSize / 4, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.fillStyle = statusColor;
+  ctx.fill();
+
+  // Draw user's username and discriminator
+  const textStartY = avatarY + avatarSize + 100;
+  ctx.font = "bold 48px 'GG Sans Bold'";
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillText(targetUser.username, avatarX, textStartY);
+
+  ctx.font = "bold 48px 'GG Sans Bold'";
+  ctx.fillStyle = "#3e3e3e";
+  ctx.fillText(`#${targetUser.discriminator}`, avatarX + ctx.measureText(targetUser.username).width + 10, textStartY);
+
+  // Calculate the width of username and discriminator text
+  const usernameWidth = ctx.measureText(targetUser.username).width;
+  const discriminatorWidth = ctx.measureText(`#${targetUser.discriminator}`).width;
+
+  // Draw rep text
+  const repText = `+${xp} REP`;
+  const repTextX = avatarX + usernameWidth + discriminatorWidth + 30;
+  const repTextY = textStartY - 10;
+
+  ctx.font = "24px 'GG Sans Semibold'";
+  const repTextWidth = ctx.measureText(repText).width;
+
+  // Draw rep rectangle
+  const repRectX = repTextX - 5; // Add a little padding to the left of the text
+  const repRectY = repTextY - 22.5; // Adjust the Y position to fit the rectangle
+  const repRectWidth = repTextWidth + 10; // Add padding to the right of the text
+  const repRectHeight = 30;
+
+  ctx.fillStyle = "#5666F2";
+  ctx.roundRect(repRectX, repRectY, repRectWidth, repRectHeight, 10).fill();
+
+  // Draw rep text on top of the rectangle
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillText(repText, repTextX, repTextY);
+
+  // Calculate XP to current level
   const xpToNextLevel = 5 * (level ** 2) + 50 * level + 100;
+  const xpToCurrentLevel = 5 * ((level - 1) ** 2) + 50 * (level - 1) + 100;
+  const xpInCurrentLevel = xp - xpToCurrentLevel;
+
+  // Draw XP progress bar
+  const progressBarWidth = canvas.width - 100;
+  const progressBarHeight = 40;
+  const progressBarX = 50;
+  const progressBarY = textStartY + 150;
+
+  // Draw progress bar background
+  ctx.fillStyle = "#E4E4E4";
+  ctx.roundRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 20).fill();
+
+  // Save canvas state
+  ctx.save();
+
+  // Set up clipping path
+  ctx.beginPath();
+  ctx.roundRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 20);
+  ctx.clip();
+
+  // Draw progress bar fill
   const xpNeededForCurrentLevel = xpToNextLevel - xpToCurrentLevel;
   const progressWidth = (xpInCurrentLevel / xpNeededForCurrentLevel) * progressBarWidth;
   ctx.fillStyle = subColor;
@@ -306,116 +537,6 @@ async function createBoosterRankCard(client, message, member, xp, level, rank, t
 
   // Send the image
   const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'psy-rank-card-boost.png' });
-  return attachment;
-}
-
-
-
-async function createNonBoosterRankCard(client, message, member, xp, level, rank, targetUser) {
-  const canvas = createCanvas(800, 250); // Adjust the size for the non-booster card
-  const ctx = canvas.getContext("2d");
-
-  ctx.roundRect = function (x, y, width, height, radius) {
-    if (typeof radius === "undefined") {
-      radius = 5;
-    }
-    this.beginPath();
-    this.moveTo(x + radius, y);
-    this.lineTo(x + width - radius, y);
-    this.quadraticCurveTo(x + width, y, x + width, y + radius);
-    this.lineTo(x + width, y + height - radius);
-    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    this.lineTo(x + radius, y + height);
-    this.quadraticCurveTo(x, y + height, x, y + height - radius);
-    this.lineTo(x, y + radius);
-    this.quadraticCurveTo(x, y, x + radius, y);
-    this.closePath();
-    return this;
-  };
-
-  // Draw outer curved rectangle
-  ctx.fillStyle = "#131313";
-  ctx.roundRect(0, 0, 800, 250, 30).fill();
-
-  // Draw inner rectangle (15 pixels inside the outer rectangle)
-  ctx.fillStyle = "#171717";
-  ctx.roundRect(15, 15, 770, 220, 20).fill();
-
-// Draw user's avatar
-try {
-  const avatar = await loadImage(targetUser.displayAvatarURL({ format: "png", size: 128, dynamic: false }));
-  const avatarSize = 55;
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(55, 40, avatarSize / 2, 0, Math.PI * 2, true);
-  ctx.closePath();
-  ctx.clip();
-  ctx.drawImage(avatar, 55 - avatarSize / 2, 40 - avatarSize / 2, avatarSize, avatarSize);
-  ctx.restore();
-} catch (error) {
-  console.error("Error loading avatar image:", error);
-}
-
-  // Draw user's username and discriminator
-  ctx.font = "25px 'Uni Sans'";
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(`${member.user.username}`, 95, 50);
-  ctx.fillStyle = "#4c4c4c";
-  ctx.fillText(`#${member.user.discriminator}`, 100 + ctx.measureText(`${member.user.username}`).width, 50);
-
-
-  // Draw user's XP
-  const xpText = `+${xp} rep`;
-  const xpTextWidth = ctx.measureText(xpText).width;
-  ctx.fillStyle = "#5666F2";
-  ctx.roundRect(270, 25, xpTextWidth + -20, 30, 10).fill();
-
-  ctx.font = "12px uni-sans";
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(xpText, 275, 45);
-
-  // Draw users rank, level, and xp
-  const rankText = `Rank: ${rank}`;
-  const levelText = `Level: ${level}`;
-  const xpNeededText = `XP: ${xp}/${level * 100}`;
-
-  ctx.font = "bold 20px 'Uni Sans'";
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillText(rankText, 100, 155);
-  ctx.fillText(levelText, 100 + ctx.measureText(rankText).width + 10, 155);
-  ctx.fillText(xpNeededText, 100 + ctx.measureText(rankText).width + ctx.measureText(levelText).width + 20, 155);
-
-  // Draw user's XP progress bar
-  const progressBarWidth = 600;
-  const progressBarHeight = 30;
-  const progressBarX = 75;
-  const progressBarY = 180;
-
-  // Draw progress bar background
-  ctx.fillStyle = "#E4E4E4";
-  ctx.roundRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 19).fill();
-
-  // Draw progress bar fill
-  const progress = (xp / (level * 100)) * progressBarWidth;
-  ctx.fillStyle = "#5765F2";
-  ctx.roundRect(progressBarX, progressBarY, progress, progressBarHeight, 19).fill();
-
-  // Draw user's status icon
-  const status = member.presence.status;
-  const statusColor = {
-    online: "#43B581",
-    idle: "#FAA61A",
-    dnd: "#F04747",
-    offline: "#747F8D",
-  }[status];
-
-  ctx.beginPath();
-  ctx.arc(75, 60, 7, 0, Math.PI * 2, true);
-  ctx.closePath();
-  ctx.fillStyle = statusColor;
-  ctx.fill();
-
-  const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'psy-rank-card.png' });
   return attachment;
 }
 

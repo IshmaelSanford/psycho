@@ -38,6 +38,18 @@ class LevelingPlugin {
     this.settings = settings;
   }
 
+  async getXP(guild, member) {
+    return this.database.get(`${guild.id}-${member.id}`, "stats.xp");
+  }
+  
+  async getLevel(guild, member) {
+    return this.database.get(`${guild.id}-${member.id}`, "stats.level");
+  }
+
+  async setXP(guild, member, xp) {
+    this.database.set(`${guild.id}-${member.id}`, xp, "stats.xp");
+  }
+
   async setLevelAndXP(guild, user, level, xp) {
     this.database.set(`${guild.id}-${user.id}`, level, "stats.level");
     this.database.set(`${guild.id}-${user.id}`, xp, "stats.xp");
