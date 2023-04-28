@@ -31,10 +31,11 @@ module.exports = class extends Command {
         iconURL: this.client.user.displayAvatarURL({ dynamic: true }),
       })
       .addFields(
-        { name: `Users (+${membersJoinedPastWeek})`, value: `${users}`, inline: true },
-        { name: "Humans", value: `${message.guild.memberCount}`, inline: true },
-        { name: "Bots", value: `${bots}`, inline: true }
+        { name: `**Users**`, value: `${users}`, inline: true },
+        { name: "**Humans**", value: `${message.guild.memberCount}`, inline: true },
+        { name: "**Bots**", value: `${bots}`, inline: true }
       )
+      .setFooter({ text: `+${membersJoinedPastWeek} members` })
       .setColor(member.displayColor === 0 ? "#23272A" : member.displayColor);
     await message.channel.send({ embeds: [embed] });
   }
