@@ -7,4 +7,6 @@ module.exports = {
   WarnEmbedDm: require('./WarnEmbedDm'),
   SuccessEmbedDm: require('./SuccessEmbedDm'),
   ErrorEmbedDm: require("./ErrorEmbedDm"),
+  LockEmbed: require("./LockEmbed"),
+  UnlockEmbed: require("./UnlockEmbed"),
 };
