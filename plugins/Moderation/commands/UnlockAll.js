@@ -4,6 +4,7 @@ const {
   ErrorEmbed,
   SuccessEmbed,
   WrongSyntaxEmbed,
+  UnlockEmbed,
 } = require("../../../embeds");
 
 module.exports = class extends Command {
@@ -33,7 +34,7 @@ module.exports = class extends Command {
     }
 
     message.reply({
-      embeds: [new SuccessEmbed({ description: `Unlocked all channels.` },message)],
+      embeds: [new UnlockEmbed({ description: `Unlocked all channels.` },message)],
     });
   }
 };
