@@ -4,7 +4,7 @@ const { Cron } = require("../../../structures");
 module.exports = class extends Cron {
   constructor(client) {
     super(client, {
-      enabled: true,
+      enabled: false,
       format: "* * * * *",
     });
   }

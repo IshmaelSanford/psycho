@@ -1,7 +1,5 @@
 const { Command } = require("../../../structures");
-const { SlashCommandBuilder } = require("@discordjs/builders");
 const { SuccessEmbed, WrongSyntaxEmbed } = require("../../../embeds");
-const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -17,27 +15,22 @@ module.exports = class extends Command {
     let amount;
 
     if (user === message.author) {
-      amount = parseInt(args[0]);
+      amount = parseInt(args[0], 10);
     } else {
-      amount = parseInt(args[1]);
+      amount = parseInt(args[1], 10);
     }
   
-    if (isNaN(amount))
+    if (isNaN(amount)) {
       return message.reply({
         embeds: [new WrongSyntaxEmbed(this.client, message, this)],
       });
-
-    await this.client.plugins.economy.setBalance(
-      message.guild.id,
-      user.id,
-      amount
-    );
+    }
+    
+    await this.client.plugins.economy.setBalance(user.id, amount);
 
     const embed = new SuccessEmbed({
       description: `Successfully set ${user}'s balance to **${this.client.plugins.economy.parseAmount(
-        amount,
-        message.guild.id,
-        user.id
+        amount
       )}**.`,
     }, message);
 

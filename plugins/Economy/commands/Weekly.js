@@ -32,34 +32,11 @@ module.exports = class extends Command {
 
     this.client.plugins.economy.weekly(message.guild.id, message.author.id);
 
-    let K = 1;
-
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        message.author.id,
-        "snake_eyes",
-        true
-      )
-    ) {
-      if (Math.random() < 0.00004) {
-        K = 2;
-      }
-    }
-
-    if (K === 2) {
-      this.client.plugins.economy.addToBalance(
-        message.guild.id,
-        message.author.id,
-        this.client.config.economy.weekly
-      );
-    }
-
     await message.reply({
       embeds: [
         new SuccessEmbed({
           description: `Claimed weekly reward of **${this.client.plugins.economy.parseAmount(
-            this.client.config.economy.weekly * K,
+            this.client.config.economy.weekly,
             message.guild.id,
             message.author.id
           )}**`,

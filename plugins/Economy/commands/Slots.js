@@ -1,6 +1,12 @@
 const { Command } = require("../../../structures");
 const { SlashCommandBuilder, EmbedBuilder } = require("@discordjs/builders");
-const { ErrorEmbed } = require("../../../embeds");
+const {
+  SuccessEmbed,
+  WarnEmbed,
+  ErrorEmbed,
+  WrongSyntaxEmbed,
+  DefaultEmbed,
+} = require("../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
@@ -19,9 +25,11 @@ module.exports = class extends Command {
     }
     const bet = parseInt(args[0]);
 
-    if (isNaN(bet)) return message.reply({
-      embeds: [new ErrorEmbed({ description: "Bet must be a valid number" }, message)],
-    });
+    if (isNaN(bet) || bet <= 0) {
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Bet must be a valid number" }, message)],
+      });
+    }
 
     const { stats } = await this.client.plugins.economy.getData(
       message.guild.id,
@@ -29,8 +37,8 @@ module.exports = class extends Command {
     );
 
     if (bet > stats.cash) {
-      message.reply({
-        embeds: [new ErrorEmbed({ description: "insufficient funds" }, message)],
+      return message.reply({
+        embeds: [new ErrorEmbed({ description: "Insufficient funds" }, message)],
       });
     }
 
@@ -85,46 +93,7 @@ module.exports = class extends Command {
 
     let K = 1;
 
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        message.author.id,
-        "snake_eyes",
-        true
-      )
-    ) {
-      if (Math.random() < 0.00004) {
-        K = 2;
-      }
-    }
-
     if (won) {
-      this.client.plugins.economy.addAchievement(
-        message.guild.id,
-        message.author.id,
-        "excitement",
-        100
-      );
-      const winStreak =
-        this.client.plugins.economy.getStat(
-          message.guild.id,
-          message.author.id,
-          "gambling_streak"
-        ) + 1;
-      this.client.plugins.economy.setStat(
-        message.guild.id,
-        message.author.id,
-        "gambling_streak",
-        winStreak
-      );
-      if (winStreak === 5) {
-        this.client.plugins.economy.addAchievement(
-          message.guild.id,
-          message.author.id,
-          "luck_streak",
-          500
-        );
-      }
       this.client.plugins.economy.addToBalance(
         message.guild.id,
         message.author.id,
@@ -136,12 +105,6 @@ module.exports = class extends Command {
         bet * multiplier
       );
     } else {
-      this.client.plugins.economy.setStat(
-        message.guild.id,
-        message.author.id,
-        "gambling_streak",
-        0
-      );
       await this.client.plugins.economy.removeFromBalance(
         message.guild.id,
         message.author.id,
@@ -154,18 +117,15 @@ module.exports = class extends Command {
       );
     }
 
-    message.reply({
-      content: `
-  
-🟦 ${f1}${f2}${f3} 🟦
-➡ ${f4}${f5}${f6} ⬅
-🟦 ${f7}${f8}${f9} 🟦
+    const updatedStats = await this.client.plugins.economy.getData(message.guild.id, message.author.id);
 
-${
-  won ? "🥳 You've won" : "😡 You've lost"
-} **$${this.client.plugins.economy.parseAmount(
-        won ? bet * 9 * K : bet
-      )}** on this bet.`,
+    message.reply({
+      content: `🟦 ${f1}${f2}${f3} 🟦\n➡️ ${f4}${f5}${f6} ⬅️\n🟦 ${f7}${f8}${f9} 🟦
+        ${
+          won ? "You've won" : "You've lost"
+        } **$${this.client.plugins.economy.parseAmount(
+          won ? bet * multiplier * K : bet
+        )}** on this bet. Your balance is now **$${this.client.plugins.economy.parseAmount(updatedStats.cash)}**.`,
     });
   }
 };

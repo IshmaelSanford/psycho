@@ -27,66 +27,25 @@ module.exports = class extends Command {
               .format(
                 "d [days] h [hours] m [minutes] s [seconds]"
               )}** before your next claim.`,
-          },message),
+          }, message),
         ],
       });
   
-    this.client.plugins.economy.daily(message.guild.id, message.author.id);
+    await this.client.plugins.economy.daily(message.guild.id, message.author.id);
   
-    let K = 1;
-  
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        message.author.id,
-        "snake_eyes",
-        true
-      )
-    ) {
-      if (Math.random() < 0.00004) {
-        K = 2;
-      }
-    }
-  
-    if (K === 2) {
-      this.client.plugins.economy.addToBalance(
-        message.guild.id,
-        message.author.id,
-        this.client.config.economy.daily
-      );
-    }
-  
-    const lastDaily = this.client.plugins.economy.getStat(
+    // Use string interpolation to create the formatted amount string
+    const dailyAmount = this.client.config.economy.daily;
+    const formattedAmount = this.client.plugins.economy.parseAmount(
+      dailyAmount,
       message.guild.id,
-      message.author.id,
-      "lastDaily"
-    );
-  
-    if (Date.now() - lastDaily < 172800000) {
-      this.client.plugins.economy.addAchievement(
-        message.guild.id,
-        message.author.id,
-        "2_in_a_row",
-        200
-      );
-    }
-  
-    this.client.plugins.economy.setStat(
-      message.guild.id,
-      message.author.id,
-      "lastDaily",
-      Date.now()
+      message.author.id
     );
   
     message.reply({
       embeds: [
         new SuccessEmbed({
-          description: `Claimed daily reward of **${this.client.plugins.economy.parseAmount(
-            this.client.config.economy.daily * K,
-            message.guild.id,
-            message.author.id
-          )}**`,
-        },message),
+          description: `Claimed daily reward of **${formattedAmount}**`,
+        }, message),
       ],
     });
   }
