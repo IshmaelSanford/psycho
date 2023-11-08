@@ -21,16 +21,6 @@ module.exports = class extends Command {
       message.author.id
     );
 
-    if (!stats.mafia) {
-      return message.reply({
-        embeds: [
-          new ErrorEmbed({
-            description: "You must be in the mafia to rob someone!",
-          }),
-        ],
-      });
-    }
-
     const user = message.mentions.users.first();
 
     if (!user) {
@@ -60,46 +50,6 @@ module.exports = class extends Command {
       user.id
     );
 
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        user.id,
-        "divine_protection",
-        true
-      )
-    ) {
-      return message.reply({
-        embeds: [
-          new ErrorEmbed({
-            description: `**${user.tag}** has divine protection, you cannot rob them!`,
-          }),
-        ],
-      });
-    }
-
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        user.id,
-        "heavy_shield",
-        true
-      )
-    ) {
-      this.client.plugins.economy.removeItemFromInventory(
-        message.guild.id,
-        user.id,
-        "heavy_shield"
-      );
-
-      return message.reply({
-        embeds: [
-          new ErrorEmbed({
-            description: `**${user.tag}** used a heavy shield to protect their money!`,
-          }),
-        ],
-      });
-    }
-
     const successChance = this.client.plugins.economy.hasItemInInventory(
       message.guild.id,
       message.author.id,
@@ -120,19 +70,6 @@ module.exports = class extends Command {
         user.id,
         amount
       );
-
-      if (
-        this.client.plugins.economy.hasItemInInventory(
-          message.guild.id,
-          message.author.id,
-          "snake_eyes",
-          true
-        )
-      ) {
-        if (Math.random() < 0.00004) {
-          amount *= 2;
-        }
-      }
 
       this.client.plugins.economy.addToBalance(
         message.guild.id,

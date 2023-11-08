@@ -1,16 +1,16 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const {
   SuccessEmbed,
   WrongSyntaxEmbed,
   ErrorEmbed,
-} = require("../../../embeds");
+} = require("../../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "set-store",
-      enabled: true,
+      enabled: false,
       syntax: "set-store <on/off>",
       staffOnly: true,
     });

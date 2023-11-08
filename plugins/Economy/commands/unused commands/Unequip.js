@@ -1,17 +1,17 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const {
   ErrorEmbed,
   SuccessEmbed,
   WrongSyntaxEmbed,
-} = require("../../../embeds");
+} = require("../../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "equip",
-      enabled: true,
-      syntax: "equip <item_id>",
+      name: "unequip",
+      enabled: false,
+      syntax: "unequip <item_id>",
     });
   }
   async execute(message, args) {
@@ -33,35 +33,11 @@ module.exports = class extends Command {
       });
     }
 
-    if (invItem.equipped) {
+    if (!invItem.equipped) {
       return message.channel.send({
         embeds: [
           new ErrorEmbed({
-            description: "You already have this item equipped!",
-          }),
-        ],
-      });
-    }
-
-    if (item_id === "old_key") {
-      const reward = Math.floor(Math.random() * 100000) + 1;
-
-      this.client.plugins.economy.removeItemFromInventory(
-        message.guild.id,
-        message.author.id,
-        item_id
-      );
-
-      this.client.plugins.economy.addToBalance(
-        message.guild.id,
-        message.author.id,
-        reward
-      );
-
-      return message.reply({
-        embeds: [
-          new SuccessEmbed({
-            description: `You have opened a crate and found **$${reward}**!`,
+            description: "You don't have this item equipped!",
           }),
         ],
       });
@@ -71,10 +47,10 @@ module.exports = class extends Command {
       const storeItem = this.client.plugins.economy
         .getItems(message.guild.id)
         .find((i) => i.store_id === invItem.id);
-      message.member.roles.add(storeItem?.item).catch(() => {});
+      message.member.roles.remove(storeItem?.item).catch(() => {});
     }
 
-    this.client.plugins.economy.equipItem(
+    this.client.plugins.economy.unequipItem(
       message.guild.id,
       message.author.id,
       item_id
@@ -83,7 +59,7 @@ module.exports = class extends Command {
     message.reply({
       embeds: [
         new SuccessEmbed({
-          description: `Successfully equipped!`,
+          description: `Successfully unequipped!`,
         }),
       ],
     });

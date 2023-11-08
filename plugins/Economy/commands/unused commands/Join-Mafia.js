@@ -1,13 +1,13 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, ErrorEmbed } = require("../../../embeds");
+const { SuccessEmbed, ErrorEmbed } = require("../../../../embeds");
 const { PermissionFlagsBits, ChannelTypes } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "join-mafia",
-      enabled: true,
+      enabled: false,
     });
   }
   async execute(message, args) {

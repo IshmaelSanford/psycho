@@ -1,6 +1,6 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { ErrorEmbed, SuccessEmbed, DefaultEmbed } = require("../../../embeds");
+const { ErrorEmbed, SuccessEmbed, DefaultEmbed } = require("../../../../embeds");
 const Blackjack = require("discord-blackjack");
 const { CommandInteraction } = require("discord.js");
 
@@ -8,7 +8,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "inventory",
-      enabled: true,
+      enabled: false,
       syntax: "inventory [user] [page]",
     });
   }

@@ -6,6 +6,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "balance",
+      aliases: ['bal'],
       enabled: false,
     });
   }

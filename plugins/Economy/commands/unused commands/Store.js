@@ -1,12 +1,12 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { DefaultEmbed } = require("../../../embeds");
+const { DefaultEmbed } = require("../../../../embeds");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "store",
-      enabled: true,
+      enabled: false,
       syntax: "store [page]",
     });
   }

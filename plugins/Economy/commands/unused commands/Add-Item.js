@@ -1,13 +1,13 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { SuccessEmbed, WrongSyntaxEmbed, ErrorEmbed } = require("../../../embeds");
+const { SuccessEmbed, WrongSyntaxEmbed, ErrorEmbed } = require("../../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "add-item",
-      enabled: true,
+      enabled: false,
       staffOnly: true,
       syntax: "add-item <role> <store_id> <cost> <description>",
     });

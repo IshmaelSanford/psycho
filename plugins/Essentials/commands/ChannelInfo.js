@@ -13,17 +13,19 @@ module.exports = class extends Command {
   }
 
   async execute(message, args) {
+    let channel;
+
     if (args.length < 1) {
-      return message.channel.send({ embeds: [new ErrorEmbed({ description: "No channel provided" }, message)] });
-    }
+        channel = message.channel;
+    } else {
+        const input = args.join(" ");
+        channel = message.guild.channels.cache.find(
+            (c) => c.name.toLowerCase() === input.toLowerCase() || c.id === input || c.toString() === input
+        );
 
-    const input = args.join(" ");
-    const channel = message.guild.channels.cache.find(
-      (c) => c.name.toLowerCase() === input.toLowerCase() || c.id === input || c.toString() === input
-    );
-
-    if (!channel) {
-      return message.channel.send({ embeds: [new ErrorEmbed({ description: "Channel not found. Provide name, id, or mention" }, message)] });
+        if (!channel) {
+            return message.channel.send({ embeds: [new ErrorEmbed({ description: "Channel not found. Provide name, id, or mention" }, message)] });
+        }
     }
 
     const embed = new DefaultEmbed()

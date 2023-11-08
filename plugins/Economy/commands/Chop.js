@@ -30,40 +30,6 @@ module.exports = class extends Command {
 
     let reward = Math.floor(Math.random() * 1000) + 1;
 
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        message.author.id,
-        "ruby_charm",
-        true
-      )
-    ) {
-      if (Math.random() < 0.001) {
-        reward = Math.floor(Math.random() * 100000) + 1;
-      }
-    }
-
-    if (
-      this.client.plugins.economy.hasItemInInventory(
-        message.guild.id,
-        message.author.id,
-        "snake_eyes",
-        true
-      )
-    ) {
-      if (Math.random() < 0.00004) {
-        reward *= 2;
-      }
-    }
-
-    this.client.plugins.economy.addToBalance(
-      message.guild.id,
-      message.author.id,
-      reward
-    );
-
-    this.client.plugins.economy.searchSpecialItem(message);
-
     message.reply({
       embeds: [
         new SuccessEmbed({

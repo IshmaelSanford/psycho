@@ -10,8 +10,9 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "coinflip",
+      aliases: ['coin','cf'],
       enabled: true,
-      syntax: "coinflio <bet> <heads or tails>",
+      syntax: "cf <bet> <heads or tails>",
     });
   }
   async execute(message, args) {

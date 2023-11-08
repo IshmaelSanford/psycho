@@ -1,32 +1,24 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const {
   SuccessEmbed,
   WrongSyntaxEmbed,
   ErrorEmbed,
-} = require("../../../embeds");
+} = require("../../../../embeds");
 const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "edit-price",
-      enabled: true,
-      syntax: "edit-price <store_id> <price>",
+      name: "remove-item",
+      enabled: false,
       staffOnly: true,
     });
   }
   async execute(message, args) {
     const store_id = args[0];
-    const price = parseInt(args[1]);
 
     if (!store_id) {
-      return message.reply({
-        embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
-      });
-    }
-
-    if (!price) {
       return message.reply({
         embeds: [new WrongSyntaxEmbed(this.name, this.syntax)],
       });
@@ -44,14 +36,10 @@ module.exports = class extends Command {
       });
     }
 
-    await this.client.plugins.economy.editItemCost(
-      message.guild.id,
-      store_id,
-      price
-    );
+    await this.client.plugins.economy.removeItem(message.guild, store_id);
 
     const embed = new SuccessEmbed({
-      description: `Changed the price of **#${store_id} Item** to **${price}**`,
+      description: `Successfully removed **#${store_id} Item** from the store.`,
     });
 
     await message.reply({ embeds: [embed] });

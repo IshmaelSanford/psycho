@@ -1,10 +1,10 @@
-const { Command } = require("../../../structures");
+const { Command } = require("../../../../structures");
 const {
   SuccessEmbed,
   ErrorEmbed,
   WrongSyntaxEmbed,
   DefaultEmbed,
-} = require("../../../embeds");
+} = require("../../../../embeds");
 const ms = require("ms");
 const { PermissionFlagsBits } = require("discord.js");
 
@@ -12,7 +12,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "blackmarket-bid",
-      enabled: true,
+      enabled: false,
       syntax: "blackmarket-bid <id> [price]",
     });
   }

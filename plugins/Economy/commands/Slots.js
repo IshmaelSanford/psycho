@@ -5,14 +5,23 @@ const { ErrorEmbed } = require("../../../embeds");
 module.exports = class extends Command {
   constructor(client) {
     super(client, {
-      name: "slots",
+      name: "slot",
       enabled: true,
+      syntax: "slot <amount>",
+      about: "Gamble your saving on a slot machine",
     });
   }
   async execute(message, args) {
+    if (args.length === 0) {
+      return message.channel.send({
+        embeds: [new WrongSyntaxEmbed(this.client, message, this)],
+      });
+    }
     const bet = parseInt(args[0]);
 
-    if (isNaN(bet)) return message.reply("❌ Bet must be valid number.");
+    if (isNaN(bet)) return message.reply({
+      embeds: [new ErrorEmbed({ description: "Bet must be a valid number" }, message)],
+    });
 
     const { stats } = await this.client.plugins.economy.getData(
       message.guild.id,
@@ -20,8 +29,8 @@ module.exports = class extends Command {
     );
 
     if (bet > stats.cash) {
-      return message.reply({
-        content: `❌ You don't have enough money in cash.`,
+      message.reply({
+        embeds: [new ErrorEmbed({ description: "insufficient funds" }, message)],
       });
     }
 
