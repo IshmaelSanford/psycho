@@ -1,5 +1,4 @@
 const Enmap = require("enmap");
-const crypto = require("crypto");
 const { DefaultEmbed } = require("../../embeds");
 
 const ensureObject = {
@@ -36,7 +35,7 @@ class EconomyPlugin {
     return this.database.get(`${server_id}-${user_id}`, "creditCardBackgroundImage") || null;
   }
   isUserSupporter(server_id, user_id) {
-    const supporterGuildId = this.client.config.supporterGuildId;
+    const supporterGuildId = this.client.config.supporterGuildId
     const currentGuildMember = this.client.guilds.cache.get(server_id).members.cache.get(user_id);
     const supporterGuildMember = this.client.guilds.cache.get(supporterGuildId).members.cache.get(user_id);
   
@@ -66,9 +65,6 @@ class EconomyPlugin {
   setServerCurrencyName(server_id, currencyName) {
     this.database.set(server_id, currencyName, "serverCurrencyName");
   }
-  randomId() {
-    return crypto.randomUUID().split("-")[0];
-  }
   getData(user_id) {
     return this.database.get(`${user_id}`);
   }
@@ -77,7 +73,6 @@ class EconomyPlugin {
   }
 
   async addToBalance(user_id, amount) {
-    // Ensure the user's data exists before trying to add to their balance
     this.database.ensure(user_id, {
       stats: {
         cash: 0,
@@ -258,9 +253,8 @@ class EconomyPlugin {
     });
   }
   parseAmount(amount, server_id) {
-    const currencyName = this.database.get(server_id, "serverCurrencyName") || this.client.config.economy.defaultCurrencyName;
-    return `${parseInt(amount, 10).toLocaleString()} ${currencyName}`;
+    const currencyName = this.database.get(`${server_id}`, "serverCurrencyName") || this.client.config.economy.defaultCurrencyName;
+    return `${currencyName} ${parseInt(amount, 10).toLocaleString()}`;
   }
 }
-
 module.exports = EconomyPlugin;

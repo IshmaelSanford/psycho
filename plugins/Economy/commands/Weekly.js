@@ -14,12 +14,11 @@ module.exports = class extends Command {
   }
   async execute(message) {
     const { cooldowns } = await this.client.plugins.economy.getData(
-      message.guild.id,
       message.author.id
     );
 
     if (Date.now() < cooldowns.nextWeekly)
-      return message.reply({
+      return message.channel.send({
         embeds: [
           new ErrorEmbed({
             description: `You need to wait **${moment
@@ -30,14 +29,13 @@ module.exports = class extends Command {
         ],
       });
 
-    this.client.plugins.economy.weekly(message.guild.id, message.author.id);
+    this.client.plugins.economy.weekly(message.author.id);
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
         new SuccessEmbed({
           description: `Claimed weekly reward of **${this.client.plugins.economy.parseAmount(
             this.client.config.economy.weekly,
-            message.guild.id,
             message.author.id
           )}**`,
         },message),

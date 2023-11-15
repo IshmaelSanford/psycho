@@ -10,7 +10,7 @@ module.exports = class RobCommand extends Command {
       enabled: true,
     });
   }
-
+// add cooldown
   async execute(message, args) {
     const target = message.mentions.users.first();
     if (!target) {
@@ -21,9 +21,6 @@ module.exports = class RobCommand extends Command {
 
     const user_id = message.author.id;
     const target_id = target.id;
-
-    // Cooldown logic (if applicable)
-    // ...
 
     // Check if the target has enough balance to be robbed
     const targetData = this.client.plugins.economy.getData(target_id);

@@ -14,12 +14,11 @@ module.exports = class extends Command {
   }
   async execute(message, args) {
     const { cooldowns } = await this.client.plugins.economy.getData(
-      message.guild.id,
       message.author.id
     );
   
     if (Date.now() < cooldowns.nextDaily)
-      return message.reply({
+      return message.channel.send({
         embeds: [
           new ErrorEmbed({
             description: `You need to wait **${moment
@@ -31,17 +30,17 @@ module.exports = class extends Command {
         ],
       });
   
-    await this.client.plugins.economy.daily(message.guild.id, message.author.id);
+    await this.client.plugins.economy.daily(message.author.id);
   
     // Use string interpolation to create the formatted amount string
     const dailyAmount = this.client.config.economy.daily;
     const formattedAmount = this.client.plugins.economy.parseAmount(
       dailyAmount,
-      message.guild.id,
+      message.guild.id, 
       message.author.id
     );
   
-    message.reply({
+    message.channel.send({
       embeds: [
         new SuccessEmbed({
           description: `Claimed daily reward of **${formattedAmount}**`,

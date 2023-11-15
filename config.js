@@ -15,7 +15,7 @@ module.exports = {
     color: "#0096ff",
   },
   economy: {
-    defaultCurrencyName: "credits",
+    defaultCurrencyName: "💴",
     max_rob_earn: 100,
     daily: 500, // daily reward income
     weekly: 1500, // weekly reward income
