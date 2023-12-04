@@ -12,7 +12,7 @@ module.exports = class extends Command {
   constructor(client) {
     super(client, {
       name: "slot",
-      enabled: true,
+      enabled: false,
       syntax: "slot <amount>",
       about: "Gamble your saving on a slot machine",
     });

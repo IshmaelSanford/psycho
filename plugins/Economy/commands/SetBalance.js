@@ -6,6 +6,8 @@ module.exports = class extends Command {
     super(client, {
       name: "setbalance",
       aliases: ['setbal'],
+      syntax: 'setbal [@user] <ammt>',
+      exmaple: 'setbal 100',
       enabled: true,
       staffOnly: true,
     });
@@ -29,9 +31,9 @@ module.exports = class extends Command {
     await this.client.plugins.economy.setBalance(user.id, amount);
 
     const embed = new SuccessEmbed({
-      description: `Successfully set ${user}'s balance to **${this.client.plugins.economy.parseAmount(
+      description: `Successfully set ${user}'s balance to ${this.client.plugins.economy.parseAmount(
         amount
-      )}**.`,
+      )}`,
     }, message);
 
     await message.reply({ embeds: [embed] });

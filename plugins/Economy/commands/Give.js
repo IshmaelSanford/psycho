@@ -54,7 +54,7 @@ module.exports = class extends Command {
 
     const formattedAmount = this.client.plugins.economy.parseAmount(amount, message.guild.id);
     const embed = new SuccessEmbed({
-      description: `Successfully wired **${formattedAmount}** to ${user}.`,
+      description: `Successfully wired ${formattedAmount} to ${user}.`,
     }, message);
 
     await message.reply({ embeds: [embed] });

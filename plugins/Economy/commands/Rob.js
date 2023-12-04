@@ -14,7 +14,7 @@ module.exports = class RobCommand extends Command {
   async execute(message, args) {
     const target = message.mentions.users.first();
     if (!target) {
-      return message.reply({
+      return message.channel.send({
         embeds: [new ErrorEmbed({ description: "You must mention a user to rob" }, message)],
       });
     }
@@ -25,7 +25,7 @@ module.exports = class RobCommand extends Command {
     // Check if the target has enough balance to be robbed
     const targetData = this.client.plugins.economy.getData(target_id);
     if (targetData.stats.cash <= 0) {
-      return message.reply({
+      return message.channel.send({
         embeds: [new ErrorEmbed({ description: "This user has nothing in their wallet" }, message)],
       });
     }
@@ -34,15 +34,16 @@ module.exports = class RobCommand extends Command {
     const successRate = 0.3; // 30% success rate, adjust as needed
     const caughtRate = 0.5; // 50% chance to get caught if failed, adjust as needed
     const robAmount = Math.floor(Math.random() * targetData.stats.cash); // Random amount up to the target's total cash
+    const formattedRobAmount = this.client.plugins.economy.parseAmount(robAmount, message.guild.id);
 
     if (Math.random() < successRate) {
       // Rob was successful
       await this.client.plugins.economy.removeFromBalance(target_id, robAmount);
       await this.client.plugins.economy.addToBalance(user_id, robAmount);
       const embed = new SuccessEmbed({
-        description: `You successfully robbed **${robAmount}** from **${target.username}**.`,
+        description: `You successfully robbed ${formattedRobAmount} from **${target.username}**.`,
       }, message);
-      message.reply({ embeds: [embed] });
+      message.channel.send({ embeds: [embed] });
     } else {
       // Rob failed
       if (Math.random() < caughtRate) {
@@ -50,15 +51,15 @@ module.exports = class RobCommand extends Command {
         const penaltyAmount = Math.floor(robAmount / 2); // 50% of the attempted rob amount as penalty
         await this.client.plugins.economy.removeFromBalance(user_id, penaltyAmount);
         const embed = new ErrorEmbed({
-          description: `You were caught and paid **${penaltyAmount}** as a penalty.`,
+          description: `You were caught and paid ${this.client.plugins.economy.parseAmount(penaltyAmount)} as a penalty.`,
         }, message);
-        message.reply({ embeds: [embed] });
+        message.channel.send({ embeds: [embed] });
       } else {
         // User failed but didn't get caught
         const embed = new ErrorEmbed({
           description: `You attempted to rob **${target.username}** but failed.`,
         }, message);
-        message.reply({ embeds: [embed] });
+        message.channel.send({ embeds: [embed] });
       }
     }
   }

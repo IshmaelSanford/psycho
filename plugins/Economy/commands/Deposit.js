@@ -39,7 +39,7 @@ module.exports = class DepositCommand extends Command {
             return message.channel.send({
                 embeds: [
                   new ErrorEmbed({
-                    description: `You can only deposit up to **${walletBalance}**.`,
+                    description: `You can only deposit up to ${this.client.plugins.economy.parseAmount(walletBalance)}.`,
                   }, message),
                 ],
             });
@@ -48,10 +48,11 @@ module.exports = class DepositCommand extends Command {
 
     // Proceed with the deposit
     const success = await this.client.plugins.economy.depositToBank(user_id, amount);
+    const formattedAmount = this.client.plugins.economy.parseAmount(amount, message.guild.id);
 
     if (success) {
         const embed = new SuccessEmbed({
-            description: `You have successfully deposited **${amount}** into your bank.`,
+            description: `You have successfully deposited ${formattedAmount} into your bank.`,
         }, message);
         message.channel.send({ embeds: [embed] });
     } else {

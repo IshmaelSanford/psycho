@@ -31,13 +31,14 @@ module.exports = class extends Command {
       })
       .addFields([
         {
-          name: "🏦 Bank",
-          value: `**${this.client.plugins.economy.parseAmount(stats.bank, message.guild.id)}**`,
+          name: "**Bank**",
+          value: `${this.client.plugins.economy.parseAmount(stats.bank, message.guild.id)}`,
         },
         {
-          name: "💼 Wallet",
-          value: `**${this.client.plugins.economy.parseAmount(stats.cash, message.guild.id)}**`,
+          name: "**Wallet**",
+          value: `${this.client.plugins.economy.parseAmount(stats.cash, message.guild.id)}`,
         },
+        // global ranking
       ]);
     await message.channel.send({ embeds: [embed] });
   }

@@ -119,20 +119,17 @@ class EconomyPlugin {
     );
   }
   async daily(user_id) {
+    const userData = this.getData(user_id) || {};
+    userData.cooldowns = userData.cooldowns || { nextDaily: 0, nextWeekly: 0 };
     this.addToBalance(user_id, this.client.config.economy.daily);
-    this.database.set(
-      `${user_id}`,
-      Date.now() + 86400000,
-      "cooldowns.nextDaily"
-    );
+    userData.cooldowns.nextDaily = Date.now() + 86400000;
+    this.database.set(`${user_id}`, userData);  
   }
   async weekly(user_id) {
+    const userData = await this.getData(user_id) || {};
     this.addToBalance(user_id, this.client.config.economy.weekly);
-    this.database.set(
-      `${user_id}`,
-      Date.now() + 86400000 * 7,
-      "cooldowns.nextWeekly"
-    );
+    userData.cooldowns.nextWeekly = Date.now() + 604800000; // 7 days in milliseconds
+    this.database.set(`${user_id}`, userData);
   }
   async depositToBank(user_id, amount) {
     // Retrieve user data
@@ -233,7 +230,6 @@ class EconomyPlugin {
     }
 
     this.client.plugins.economy.addToBalance(
-      interaction.guild.id,
       interaction.user.id,
       amount
     );
@@ -244,9 +240,9 @@ class EconomyPlugin {
           title: "Random Drop",
           description: `${
             interaction.user
-          } claimed the drop and received **$${this.client.plugins.economy.parseAmount(
+          } claimed the drop and received **${this.client.plugins.economy.parseAmount(
             amount
-          )}**!`,
+          )}**`,
         }),
       ],
       components: [],
